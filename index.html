@@ -1,0 +1,4758 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Murottal Kemenag App</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      @font-face {
+        font-family: "LPMQ Isep Misbah";
+        src: url("LPMQ IsepMisbah.ttf") format("truetype");
+        font-display: swap;
+      }
+
+      :root {
+        /* Gunakan LPMQ sebagai font utama, fallback ke Scheherazade */
+        --font-arab: "LPMQ Isep Misbah", "Scheherazade New", serif;
+
+        --primary: #009860;
+        --primary-dark: #007046;
+        --primary-light: #e0f2e9;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --bg-body: #f3f4f6;
+        --surface: #ffffff;
+        --shadow-card: 0 4px 20px -5px rgba(0, 0, 0, 0.06);
+        --radius-card: 24px;
+        --nav-height: 60px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .verse-latin {
+        font-size: 14px;
+        font-style: italic;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-top: 6px;
+      }
+
+      .verse-translation {
+        font-size: 14px;
+        color: var(--text-main);
+        line-height: 1.7;
+        margin-top: 6px;
+      }
+
+      /* --- TRIGGER BUTTON SELECTOR --- */
+      .font-trigger-btn {
+        margin-left: auto;
+        padding: 6px 12px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: var(--text-main);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #e5e7eb;
+        transition: 0.2s;
+      }
+
+      .font-trigger-btn:active {
+        transform: scale(0.95);
+        background: #e5e7eb;
+      }
+
+      .font-trigger-btn i {
+        font-size: 16px;
+        color: var(--primary);
+      }
+
+      /* --- STYLE MODAL / POPUP FONT --- */
+      .modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 100;
+        display: flex;
+        align-items: flex-end; /* Muncul dari bawah */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
+      }
+
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal-content {
+        background: #fff;
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        padding: 24px;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .modal-overlay.open .modal-content {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .modal-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .close-modal {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+      }
+
+      .font-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .font-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid #f3f4f6;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .font-option:hover {
+        background: #f9fafb;
+      }
+
+      .font-option.active {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      .font-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .font-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 2px;
+      }
+
+      .font-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .font-option.active .font-name {
+        color: var(--primary-dark);
+      }
+
+      .font-option.active .font-desc {
+        color: var(--primary);
+        opacity: 0.8;
+      }
+
+      .check-icon {
+        font-size: 20px;
+        color: var(--primary);
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s ease;
+      }
+
+      .font-option.active .check-icon {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      body {
+        background-color: var(--bg-body);
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      #app {
+        width: 100%;
+        max-width: 440px;
+        background: var(--bg-body);
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        padding-top: env(safe-area-inset-top);
+        padding-top: constant(safe-area-inset-top);
+      }
+
+      @media (min-width: 450px) {
+        #app {
+          height: 95vh;
+          margin-top: 2.5vh;
+          border-radius: 36px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          overflow: hidden;
+          background: #fff;
+        }
+      }
+
+      /* VIEW LAYOUT */
+      .view-container {
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: relative;
+        background: #f9fafb;
+        padding-bottom: 80px;
+      }
+
+      .view-section {
+        display: none;
+        min-height: 100%;
+        flex-direction: column;
+        animation: fadeIn 0.4s ease;
+      }
+
+      .view-section.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* HEADER & SEARCH */
+      .header {
+        padding: 35px 24px 20px;
+        background: #ffffff;
+        position: relative;
+        z-index: 20;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+      }
+
+      .header p {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-top: 2px;
+      }
+
+      .search-wrap {
+        margin-top: 18px;
+        position: relative;
+      }
+
+      .search-wrap i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 16px 16px 16px 48px;
+        border: 2px solid transparent;
+        background: #f3f4f6;
+        border-radius: 18px;
+        font-size: 14px;
+        outline: none;
+        transition: 0.3s;
+        color: var(--text-main);
+        font-weight: 500;
+      }
+
+      .search-input:focus {
+        background: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 4px 20px rgba(0, 152, 96, 0.15);
+      }
+
+      /* CARD LIST */
+      .content-list {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-bottom: 20px;
+      }
+
+      .card {
+        background: var(--surface);
+        padding: 20px;
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2;
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        cursor: pointer;
+        min-height: 100px;
+      }
+
+      .card:active {
+        transform: scale(0.98);
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        right: -30px;
+        bottom: -34px;
+        width: 150px;
+        height: 150px;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23009860' d='M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.2,-19.2,95.8,-5.3C93.5,8.6,82.1,21.5,70.9,32.4C59.7,43.3,48.7,52.2,36.5,60.2C24.3,68.2,10.9,75.3,-1.3,77.5C-13.5,79.8,-25.7,77.1,-37.2,70.6C-48.7,64.1,-59.4,53.8,-68.2,41.9C-77,30,-83.8,16.5,-84.3,2.7C-84.8,-11.2,-78.9,-25.3,-69.6,-36.8C-60.3,-48.3,-47.6,-57.2,-34.7,-64.9C-21.8,-72.6,-8.7,-79.1,5.2,-88.1L19.1,-97.1' transform='translate(100 100)' /%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        opacity: 0.05;
+        z-index: 0;
+        pointer-events: none;
+        transition: 0.3s;
+      }
+
+      .info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        z-index: 1;
+        position: relative;
+        flex: 1;
+      }
+
+      .badge {
+        width: 44px;
+        height: 44px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        border-radius: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .details h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 2px;
+        line-height: 1.3;
+      }
+
+      .details .meaning {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+        opacity: 0.9;
+      }
+
+      .meta-tags {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: flex;
+        align-items: center;
+        gap: 0px;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: #f3f4f6;
+        padding: 4px 6px;
+        border-radius: 8px;
+        transition: 0.3s;
+      }
+
+      .tag i {
+        font-size: 11px;
+        margin-right: 2px;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        z-index: 1;
+        position: relative;
+        min-width: 90px;
+        gap: 8px;
+      }
+
+      .arabic {
+        font-family: "Scheherazade New", serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1;
+        text-align: right;
+        margin-top: -1px;
+        margin-bottom: 12px;
+      }
+
+      /* PLAYER & PROGRESS RING STYLES */
+      .player-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: -5px;
+        padding-bottom: 5px;
+      }
+
+      .timer {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary);
+        font-variant-numeric: tabular-nums;
+        opacity: 0;
+        transition: 0.3s;
+        transform: translateX(5px);
+      }
+
+      .btn-play-circle {
+        position: relative;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: 0.3s;
+        z-index: 2;
+      }
+
+      .btn-play-circle i {
+        font-size: 17px;
+        color: var(--text-main);
+        z-index: 10;
+        position: relative;
+      }
+
+      .progress-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: rotate(-90deg);
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .prog-bg {
+        fill: none;
+        stroke: #e5e7eb;
+      }
+
+      .prog-bar {
+        fill: none;
+        stroke: var(--primary);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.1s linear;
+      }
+
+      .btn-read-arrow {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-dark);
+        margin-top: 5px;
+      }
+
+      /* CARD ACTIVE STATES */
+      .card.active {
+        background: linear-gradient(135deg, #009860 0%, #007046 100%);
+        box-shadow: 0 15px 30px -5px rgba(0, 152, 96, 0.4);
+      }
+
+      .card.active .badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+
+      .card.active h3,
+      .card.active .meaning {
+        color: #fff;
+      }
+
+      .card.active .meaning {
+        opacity: 0.8;
+      }
+
+      .card.active .tag {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .card.active .arabic {
+        color: #fff;
+      }
+
+      .card.active::before {
+        opacity: 0.15;
+        filter: brightness(2);
+      }
+
+      .card.active .timer {
+        opacity: 1;
+        transform: translateX(0);
+        color: #d1fae5;
+      }
+
+      .card.active .btn-play-circle {
+        background: #fff;
+      }
+
+      .card.active .btn-play-circle i {
+        color: var(--primary-dark);
+      }
+
+      .card.active .prog-bg {
+        stroke: rgba(0, 0, 0, 0.1);
+      }
+
+      .card.active .prog-bar {
+        stroke: var(--primary);
+      }
+
+      /* OTHER COMPONENTS */
+      .loading,
+      .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 60px 20px;
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        margin-bottom: 10px;
+        color: #e5e7eb;
+      }
+
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* EXPLORE */
+      .explore-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding: 16px 20px 20px;
+      }
+
+      .exp-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+        height: 140px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .exp-card:active {
+        transform: scale(0.96);
+      }
+
+      .exp-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 12px;
+        transition: 0.3s;
+      }
+
+      .exp-blue .exp-icon {
+        background: #eff6ff;
+        color: #3b82f6;
+      }
+      .exp-purple .exp-icon {
+        background: #f5f3ff;
+        color: #8b5cf6;
+      }
+      .exp-orange .exp-icon {
+        background: #fff7ed;
+        color: #f97316;
+      }
+      .exp-teal .exp-icon {
+        background: #f0fdfa;
+        color: #14b8a6;
+      }
+
+      .exp-card h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 2px;
+      }
+
+      .exp-card span {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .exp-card::after {
+        content: "";
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: currentColor;
+        border-radius: 50%;
+        opacity: 0.03;
+        right: -20px;
+        bottom: -20px;
+        pointer-events: none;
+      }
+
+      .exp-blue {
+        color: #3b82f6;
+      }
+      .exp-purple {
+        color: #8b5cf6;
+      }
+      .exp-orange {
+        color: #f97316;
+      }
+      .exp-teal {
+        color: #14b8a6;
+      }
+
+      /* OVERLAYS */
+      .overlay-view {
+        position: fixed; /* Ubah dari absolute ke fixed agar menempel kuat di layar */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%; /* Gunakan height 100% daripada bottom:0 untuk stabilitas mobile */
+        background: #fff;
+        z-index: 100; /* Pastikan lebih tinggi dari bottom-nav (yang 40) */
+        display: none;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .overlay-view.open {
+        transform: translateX(0);
+        display: flex;
+      }
+
+      .detail-header {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fff;
+        flex-shrink: 0;
+        gap: 15px;
+        position: relative;
+        z-index: 10;
+      }
+
+      .btn-back {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+
+      .detail-title h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .detail-title p {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .detail-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #fafafa;
+      }
+
+      /* MUSHAF */
+      #view-mushaf {
+        background: #fdfdfd;
+        z-index: 60;
+      }
+
+      .mushaf-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 15px;
+        background: #fdfcf8;
+        position: relative;
+      }
+
+      /* KEMBALI KE NILAI ASLI ANDA */
+      .mushaf-page-text {
+        font-family: var(--font-arab);
+        line-height: 2.2; /* LPMQ butuh line-height agak renggang*/
+        font-size: 32px; /* Font ini terlihat sedikit lebih kecil, jadi size dibesarkan aslinya 26*/
+        /* Fitur font khusus agar harakat tidak bertabrakan */
+        font-feature-settings:
+          "kern" 1,
+          "liga" 1,
+          "calt" 1;
+        width: 100%;
+        max-width: 600px;
+        background: transparent;
+        color: #000;
+        direction: rtl;
+        text-align: justify;
+        line-height: 2.3;
+        font-size: 28px;
+        padding: 5px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .mushaf-page-text.loaded {
+        opacity: 1;
+      }
+
+      /* KEMBALI KE NILAI ASLI ANDA */
+      .ayah-marker {
+        display: inline-block;
+        font-family: "Scheherazade New", serif;
+        font-size: 0.9em;
+        color: var(--primary);
+        margin: 0 5px;
+        white-space: nowrap;
+        font-weight: 700;
+      }
+
+      .surah-separator {
+        width: 100%;
+        margin: 30px 0 20px;
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .surah-box {
+        background: var(--surface);
+        border: 2px solid var(--primary-light);
+        padding: 8px 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        margin-bottom: 5px;
+      }
+
+      .surah-name-display {
+        font-family: "Amiri", serif;
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 20px;
+      }
+
+      .bismillah-text {
+        font-family: "Scheherazade New", serif;
+        font-size: 26px;
+        color: var(--text-main);
+        margin-top: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+        display: block;
+      }
+
+      .mushaf-loader {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--primary);
+      }
+
+      .mushaf-controls {
+        height: 70px;
+        background: #fff;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+        z-index: 65;
+      }
+
+      .page-input-wrap {
+        display: flex;
+        align-items: center;
+        background: #f3f4f6;
+        padding: 5px 12px;
+        border-radius: 10px;
+        gap: 8px;
+      }
+
+      .page-input {
+        width: 40px;
+        background: transparent;
+        border: none;
+        text-align: center;
+        font-weight: 700;
+        color: var(--text-main);
+        font-size: 14px;
+        outline: none;
+      }
+
+      .page-input-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .nav-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .nav-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* DETAIL VERSES */
+      .verse-item {
+        background: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+      }
+
+      .verse-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: #f3f4f6;
+        padding: 8px 12px;
+        border-radius: 12px;
+      }
+
+      .verse-num {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+        background: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .verse-opts {
+        display: flex;
+        gap: 15px;
+      }
+
+      .verse-opts i {
+        font-size: 18px;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .verse-opts i:hover {
+        color: var(--primary);
+      }
+
+      .verse-arabic {
+        font-family: "Scheherazade New", serif;
+        font-size: 34px;
+        text-align: right;
+        color: var(--text-main);
+        line-height: 2.2;
+        margin-bottom: 25px;
+        direction: rtl;
+      }
+
+      .verse-latin {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #4b5563;
+        text-align: left;
+      }
+
+      .bismillah-header {
+        text-align: center;
+        font-family: "Scheherazade New", serif;
+        font-size: 30px;
+        color: var(--text-main);
+        margin: 20px 0 40px;
+      }
+
+      /* NAV */
+      .bottom-nav {
+        background: #fff;
+        height: 60px;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.04);
+        z-index: 40;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 6px 16px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        position: relative;
+        gap: 2px;
+        flex: 1;
+      }
+
+      .nav-item i {
+        font-size: 20px;
+        transition: 0.3s;
+        margin-bottom: 0;
+      }
+
+      .nav-item span {
+        font-size: 10px;
+        font-weight: 600;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        transform: translateY(5px);
+      }
+
+      .nav-item.active {
+        color: var(--primary);
+        background-color: var(--primary-light);
+      }
+
+      .nav-item.active span {
+        max-height: 20px;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* JADWAL SHOLAT STYLES */
+      .prayer-times-container {
+        padding: 20px;
+        background: #f9fafb;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .location-card {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: white;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+      }
+
+      .location-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .location-info h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .location-info p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .location-change-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+      }
+
+      .location-change-btn:active {
+        transform: scale(0.95);
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .date-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .date-info i {
+        font-size: 16px;
+      }
+
+      .prayer-times-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .prayer-time-card {
+        background: white;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .prayer-time-card.active {
+        background: linear-gradient(135deg, #009860 0%, #007046 100%);
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 152, 96, 0.2);
+      }
+
+      .prayer-time-card.active .prayer-name {
+        color: white;
+      }
+
+      .prayer-time-card.active .prayer-time {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .prayer-time-card::before {
+        content: "";
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        width: 80px;
+        height: 80px;
+        background: currentColor;
+        border-radius: 50%;
+        opacity: 0.05;
+        pointer-events: none;
+      }
+
+      .prayer-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .prayer-name i {
+        font-size: 16px;
+      }
+
+      .prayer-time {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .next-prayer-banner {
+        background: var(--primary-light);
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .next-prayer-info h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 5px;
+      }
+
+      .next-prayer-time {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .countdown {
+        font-size: 14px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-top: 5px;
+      }
+
+      .next-prayer-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+      }
+
+      .location-modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
+      }
+
+      .location-modal.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .location-modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 400px;
+        border-radius: 20px;
+        padding: 24px;
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .location-modal.open .location-modal-content {
+        transform: scale(1);
+      }
+
+      .location-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .location-modal-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .location-close-modal {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+      }
+
+      .location-input-group {
+        margin-bottom: 20px;
+      }
+
+      .location-input-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+      }
+
+      .location-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 14px;
+        outline: none;
+        transition: 0.3s;
+        color: var(--text-main);
+      }
+
+      .location-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 152, 96, 0.1);
+      }
+
+      .location-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .location-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .location-btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .location-btn-primary:active {
+        transform: scale(0.98);
+        background: var(--primary-dark);
+      }
+
+      .location-btn-secondary {
+        background: #f3f4f6;
+        color: var(--text-main);
+      }
+
+      .location-btn-secondary:active {
+        transform: scale(0.98);
+        background: #e5e7eb;
+      }
+
+      .location-cities {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 10px;
+      }
+
+      .city-option {
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .city-option:hover {
+        background: #f3f4f6;
+      }
+
+      .city-option.active {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 600;
+      }
+
+      .city-option i {
+        font-size: 16px;
+        color: var(--primary);
+      }
+
+      .city-option.active i {
+        color: var(--primary-dark);
+      }
+
+      /*arah kiblat*/
+      /* --- QIBLA COMPASS STYLES --- */
+      .qibla-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fdfcf8;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .compass-wrap {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow:
+          0 10px 30px -10px rgba(0, 0, 0, 0.1),
+          inset 0 0 0 10px #f9fafb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 40px;
+        transition: all 0.1s ease-out; /* Smooth rotation */
+      }
+
+      /* Indikator Jarum Merah (Penunjuk Atas/User) */
+      .user-pointer {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 20px;
+        background: var(--primary);
+        border-radius: 4px;
+        z-index: 10;
+        box-shadow: 0 0 10px rgba(0, 152, 96, 0.4);
+      }
+
+      /* Piringan Kompas yang berputar */
+      .compass-disc {
+        width: 85%;
+        height: 85%;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #fff 0%, #f3f4f6 50%, #fff 100%);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        transition: transform 0.1s linear;
+        will-change: transform;
+      }
+
+      .compass-disc::after {
+        content: "N";
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 800;
+        color: #ef4444; /* Merah untuk Utara */
+        font-size: 14px;
+      }
+
+      /* Jarum/Indikator Kiblat di dalam piringan */
+      .qibla-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        transform: translate(-50%, -50%); /* Rotasi diatur via JS */
+        pointer-events: none;
+      }
+
+      .kaaba-icon-wrap {
+        position: absolute;
+        top: 10px; /* Jarak dari pinggir dalam */
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .kaaba-icon {
+        font-size: 24px;
+        color: var(--text-main);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      }
+
+      .kaaba-arrow {
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 10px solid var(--text-main);
+        margin-bottom: 2px;
+      }
+
+      /* Status & Derajat */
+      .qibla-info {
+        text-align: center;
+        z-index: 5;
+      }
+
+      .degree-text {
+        font-size: 42px;
+        font-weight: 800;
+        color: var(--text-main);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .degree-label {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .qibla-status {
+        margin-top: 15px;
+        padding: 8px 16px;
+        background: #f3f4f6;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.3s;
+      }
+
+      /* Saat Lurus Kiblat */
+      .qibla-container.aligned .compass-wrap {
+        box-shadow:
+          0 0 0 8px var(--primary-light),
+          0 10px 40px -10px var(--primary);
+        border-color: var(--primary);
+      }
+
+      .qibla-container.aligned .user-pointer {
+        background: var(--primary-dark);
+      }
+
+      .qibla-container.aligned .qibla-status {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .qibla-container.aligned .kaaba-icon {
+        color: var(--primary);
+      }
+
+      .qibla-container.aligned .kaaba-arrow {
+        border-bottom-color: var(--primary);
+      }
+
+      /* Permission Button (iOS) */
+      .permission-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .btn-permission {
+        margin-top: 20px;
+        padding: 12px 24px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 152, 96, 0.3);
+      }
+      /*akhir arah kiblat*/
+
+      /* LAST READ VIEW */
+      #view-last-read {
+        background: #f9fafb;
+      }
+
+      .last-read-container {
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .last-read-header {
+        margin-bottom: 24px;
+        text-align: center;
+      }
+
+      .last-read-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 8px;
+      }
+
+      .last-read-header p {
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .last-read-options {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .last-read-option {
+        background: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .last-read-option:active {
+        transform: scale(0.98);
+      }
+
+      .last-read-option-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .last-read-option.surah .last-read-option-icon {
+        background: #eff6ff;
+        color: #3b82f6;
+      }
+
+      .last-read-option.mushaf .last-read-option-icon {
+        background: #f5f3ff;
+        color: #8b5cf6;
+      }
+
+      .last-read-option-info {
+        flex: 1;
+      }
+
+      .last-read-option-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+      }
+
+      .last-read-option-desc {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .last-read-option-arrow {
+        width: 32px;
+        height: 32px;
+        background: var(--primary-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-dark);
+      }
+
+      .empty-last-read {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+      }
+
+      .empty-last-read i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #e5e7eb;
+      }
+
+      .empty-last-read h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-main);
+      }
+
+      .empty-last-read p {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .btn-explore {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-explore:active {
+        transform: scale(0.98);
+        background: var(--primary-dark);
+      }
+
+      /* --- STYLE TAMBAHAN TASBIH & DOA --- */
+      .exp-indigo {
+        color: #6366f1;
+      }
+      .exp-indigo .exp-icon {
+        background: #eef2ff;
+        color: #6366f1;
+      }
+
+      .exp-pink {
+        color: #ec4899;
+      }
+      .exp-pink .exp-icon {
+        background: #fdf2f8;
+        color: #ec4899;
+      }
+
+      /* Tasbih Styles */
+      .tasbih-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fdfcf8;
+        position: relative;
+      }
+
+      .tasbih-display {
+        font-size: 80px;
+        font-weight: 800;
+        color: var(--primary);
+        font-variant-numeric: tabular-nums;
+        margin-bottom: 40px;
+        text-shadow: 0 4px 20px rgba(0, 152, 96, 0.1);
+      }
+
+      .btn-tasbih-tap {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #009860 0%, #007046 100%);
+        box-shadow:
+          0 10px 40px rgba(0, 152, 96, 0.3),
+          inset 0 4px 10px rgba(255, 255, 255, 0.2);
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.1s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-tasbih-tap:active {
+        transform: scale(0.95);
+      }
+
+      .btn-tasbih-tap i {
+        font-size: 48px;
+        margin-bottom: 5px;
+      }
+      .btn-tasbih-tap span {
+        font-size: 16px;
+        font-weight: 600;
+        opacity: 0.9;
+      }
+
+      /* Efek Ripple saat klik */
+      .btn-tasbih-tap::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        opacity: 0;
+        transform: scale(0);
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
+      }
+      .btn-tasbih-tap:active::after {
+        opacity: 1;
+        transform: scale(1.5);
+        transition: 0s;
+      }
+
+      .tasbih-controls {
+        margin-top: 50px;
+        display: flex;
+        gap: 20px;
+      }
+
+      .btn-tasbih-reset {
+        background: #fee2e2;
+        color: #ef4444;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      /* Doa Styles - Menggunakan ulang style card yang ada */
+      /* --- STYLE PENCARIAN DOA --- */
+
+      /* Style tombol toggle di header */
+      .btn-search-toggle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        font-size: 20px;
+        /* Reset margin dari class font-trigger-btn sebelumnya jika ada */
+        margin-left: auto;
+      }
+
+      /* Transisi putaran ikon */
+      .btn-search-toggle i {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Keadaan aktif (saat tombol X) */
+      .btn-search-toggle.active {
+        background: #fee2e2; /* Merah muda lembut */
+        color: #ef4444; /* Merah */
+        border-color: #fecaca;
+      }
+
+      .btn-search-toggle.active i {
+        transform: rotate(90deg); /* Efek memutar saat ganti icon */
+      }
+
+      /* Area Drawer Pencarian */
+      /* Container pembungkus drawer */
+      .search-drawer {
+        background: #fff;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 20px; /* Padding kiri-kanan */
+
+        /* Transisi halus */
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Saat drawer terbuka */
+      .search-drawer.open {
+        /* Perbesar max-height agar muat input + margin */
+        max-height: 100px;
+        opacity: 1;
+
+        /* Beri ruang atas dan bawah yang cukup */
+        padding-top: 32px;
+        padding-bottom: 42px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      /* Pastikan input tidak memiliki margin aneh */
+      .search-drawer .search-wrap {
+        margin-top: 0;
+        width: 100%;
+      }
+
+      .doa-arabic {
+        /* UBAH PRIORITAS FONT KE AMIRI */
+        font-family: "Amiri", "LPMQ Isep Misbah", "Scheherazade New", serif;
+
+        font-size: 30px; /* Amiri sedikit lebih tebal, size 30px sudah cukup */
+        color: var(--text-main);
+        text-align: right;
+        margin: 15px 0;
+
+        /* PENTING UNTUK DOA: Jarak baris harus longgar */
+        line-height: 2.4;
+
+        width: 100%;
+        display: block;
+        padding: 5px 2px;
+        white-space: normal;
+
+        /* PENTING: Memaksa browser merender ligatur Arab dengan benar */
+        direction: rtl;
+        font-feature-settings:
+          "kern" 1,
+          "liga" 1,
+          "calt" 1;
+      }
+
+      .doa-latin {
+        font-size: 13px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-style: italic;
+      }
+      .doa-arti {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* --- SETTING VIEW STYLES --- */
+      .setting-container {
+        padding: 0 20px 80px 20px;
+      }
+
+      .setting-group-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin: 20px 0 10px 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .setting-card {
+        background: var(--surface);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+      }
+
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        transition: background 0.2s;
+      }
+
+      .setting-item:last-child {
+        border-bottom: none;
+      }
+
+      .setting-item:active {
+        background: #f9fafb;
+      }
+
+      .setting-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .setting-label i {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 16px;
+      }
+
+      /* iOS Switch Style */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e7eb;
+        transition: 0.4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: 0.4s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      input:checked + .slider {
+        background-color: var(--primary);
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px var(--primary);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+
+      .slider.round {
+        border-radius: 34px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+
+      /* Range Slider */
+      .range-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 5px;
+        background: #e5e7eb;
+        outline: none;
+      }
+
+      .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      /* --- DARK MODE VARIABLES --- */
+      body.dark-mode {
+        --bg-body: #111827;
+        --surface: #1f2937;
+        --text-main: #f9fafb;
+        --text-muted: #9ca3af;
+        --primary-light: #064e3b; /* Hijau tua sekali */
+        --primary-dark: #34d399; /* Hijau terang */
+      }
+
+      /* Dark mode overrides specific */
+      body.dark-mode .view-container {
+        background: #111827;
+      }
+      body.dark-mode .header {
+        background: #1f2937;
+        border-bottom-color: #374151;
+      }
+      body.dark-mode .search-input {
+        background: #374151;
+        color: white;
+      }
+      body.dark-mode .nav-item {
+        color: #6b7280;
+      }
+      body.dark-mode .bottom-nav {
+        background: #1f2937;
+        border-top-color: #374151;
+      }
+      body.dark-mode .card,
+      body.dark-mode .exp-card,
+      body.dark-mode .setting-card,
+      body.dark-mode .verse-item,
+      body.dark-mode .surah-box,
+      body.dark-mode .mushaf-controls,
+      body.dark-mode .detail-header,
+      body.dark-mode .overlay-view,
+      body.dark-mode .modal-content,
+      body.dark-mode .location-modal-content {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+      }
+      body.dark-mode .detail-content,
+      body.dark-mode .mushaf-container,
+      body.dark-mode .qibla-container,
+      body.dark-mode .tasbih-container {
+        background: #111827;
+      }
+
+      body.dark-mode .verse-num {
+        background: #374151;
+        color: var(--primary-dark);
+      }
+      body.dark-mode .verse-toolbar {
+        background: #374151;
+      }
+      body.dark-mode .verse-latin {
+        color: #d1d5db;
+      }
+      body.dark-mode .btn-back {
+        background: #374151;
+        border-color: #4b5563;
+        color: white;
+      }
+      body.dark-mode .compass-wrap {
+        background: #374151;
+        box-shadow: none;
+        border: 1px solid #4b5563;
+      }
+      body.dark-mode .compass-disc {
+        background: #1f2937;
+      }
+      body.dark-mode .qibla-status {
+        background: #374151;
+        color: #d1d5db;
+      }
+
+      /*tahlil*/
+      /* --- STYLE TAMBAHAN: TAHLIL --- */
+      .exp-cyan {
+        color: #0891b2;
+      }
+      .exp-cyan .exp-icon {
+        background: #ecfeff;
+        color: #0891b2;
+      }
+
+      /* Item List Tahlil */
+      /* Update CSS ini di dalam tag <style> */
+
+      /* --- PERBAIKAN CSS TAHLIL --- */
+      .tahlil-card {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        position: relative;
+        overflow: hidden; /* Pastikan border-radius tetap rapi */
+
+        /* Flexbox Settings */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Rata kiri horizontal */
+        justify-content: flex-start; /* PENTING: Isi mulai dari ATAS, bukan tengah */
+
+        /* Height Settings */
+        height: auto; /* Tinggi otomatis mengikuti isi */
+        min-height: fit-content; /* Memastikan tidak gepeng */
+        width: 100%;
+      }
+
+      /* Pastikan judul selebar kartu agar badge ada di kanan */
+      .tahlil-title {
+        width: 100%;
+        /* sisa style judul tetap sama... */
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Badge untuk jumlah bacaan (misal: 33x) */
+      .tahlil-count-badge {
+        background: #fef3c7;
+        color: #d97706;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 8px;
+        font-weight: 800;
+      }
+
+      /* Teks Arab Tahlil */
+      .tahlil-arabic {
+        font-family: "Amiri", "LPMQ Isep Misbah", serif;
+        font-size: 28px;
+        color: var(--text-main);
+        text-align: right;
+        line-height: 2.2;
+        margin-bottom: 12px;
+        direction: rtl;
+      }
+
+      /* Terjemahan/Latin */
+      .tahlil-translation {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-style: italic;
+        border-top: 1px dashed rgba(0, 0, 0, 0.05);
+        padding-top: 10px;
+      }
+
+      /* Dark mode adjustment untuk Tahlil */
+      body.dark-mode .tahlil-card {
+        background: #1f2937;
+        border-color: #374151;
+      }
+      body.dark-mode .tahlil-count-badge {
+        background: #78350f;
+        color: #fcd34d;
+      }
+      /*akhir*/
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="view-container">
+        <div id="view-murottal" class="view-section active">
+          <div class="header">
+            <h1>Murottal</h1>
+            <p>Dengarkan lantunan ayat suci</p>
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="search-murottal"
+                class="search-input"
+                placeholder="Cari nama surah..."
+                oninput="filterSurah(this.value, 'list-murottal')"
+              />
+              <i class="ri-search-2-line"></i>
+            </div>
+          </div>
+          <div class="content-list" id="list-murottal">
+            <div class="loading">
+              <i class="ri-loader-4-line spin"></i><br /><br />Memuat Surat...
+            </div>
+          </div>
+        </div>
+
+        <div id="view-membaca" class="view-section">
+          <div class="header">
+            <h1>Membaca</h1>
+            <p>Baca surah dan terjemahan</p>
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="search-reading"
+                class="search-input"
+                placeholder="Cari nama surah..."
+                oninput="filterSurah(this.value, 'list-reading')"
+              />
+              <i class="ri-search-2-line"></i>
+            </div>
+          </div>
+          <div class="content-list" id="list-reading">
+            <div class="loading">
+              <i class="ri-loader-4-line spin"></i><br /><br />Memuat Daftar...
+            </div>
+          </div>
+        </div>
+
+        <div id="view-explore" class="view-section">
+          <div class="header">
+            <h1>Explore</h1>
+            <p>Fitur penunjang ibadah</p>
+          </div>
+          <div class="explore-grid">
+            <div class="exp-card exp-blue" onclick="openMushaf()">
+              <div class="exp-icon"><i class="ri-book-open-fill"></i></div>
+              <h4>Al-Qur'an</h4>
+              <span>Jumlah 604 Halaman</span>
+            </div>
+
+            <div class="exp-card exp-cyan" onclick="openTahlil()">
+              <div class="exp-icon"><i class="ri-group-line"></i></div>
+              <h4>Tahlil</h4>
+              <span>Doa Arwah & Dzikir</span>
+            </div>
+
+            <div class="exp-card exp-purple" onclick="openPrayerTimes()">
+              <div class="exp-icon"><i class="ri-time-line"></i></div>
+              <h4>Jadwal Sholat</h4>
+              <span>Waktu Setempat</span>
+            </div>
+            <div class="exp-card exp-teal" onclick="openLastRead()">
+              <div class="exp-icon"><i class="ri-bookmark-3-line"></i></div>
+              <h4>Terakhir Baca</h4>
+              <span>Lanjutkan Ayat</span>
+            </div>
+            <div class="exp-card exp-orange" onclick="openQibla()">
+              <div class="exp-icon">
+                <i class="ri-compass-discover-line"></i>
+              </div>
+              <h4>Arah Kiblat</h4>
+              <span>Pencari Kiblat</span>
+            </div>
+
+            <div class="exp-card exp-indigo" onclick="openTasbih()">
+              <div class="exp-icon"><i class="ri-add-circle-line"></i></div>
+              <h4>Tasbih</h4>
+              <span>Penghitung Dzikir</span>
+            </div>
+
+            <div class="exp-card exp-pink" onclick="openDoa()">
+              <div class="exp-icon"><i class="ri-hand-heart-line"></i></div>
+              <h4>Doa Harian</h4>
+              <span>Kumpulan Doa</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-setting" class="view-section">
+          <div class="header">
+            <h1>Pengaturan</h1>
+            <p>Sesuaikan preferensi aplikasi</p>
+          </div>
+
+          <div class="setting-container">
+            <div class="setting-group-title">Tampilan</div>
+            <div class="setting-card">
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i
+                    class="ri-moon-line"
+                    style="background: #eef2ff; color: #6366f1"
+                  ></i>
+                  <span>Mode Gelap</span>
+                </div>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    id="toggle-dark-mode"
+                    onchange="toggleDarkMode(this)"
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div
+                class="setting-item"
+                style="
+                  flex-direction: column;
+                  align-items: flex-start;
+                  gap: 10px;
+                "
+              >
+                <div
+                  class="setting-label"
+                  style="width: 100%; justify-content: space-between"
+                >
+                  <div style="display: flex; align-items: center; gap: 12px">
+                    <i
+                      class="ri-font-size"
+                      style="background: #f0fdf4; color: #16a34a"
+                    ></i>
+                    <span>Ukuran Teks Arab</span>
+                  </div>
+                  <span
+                    id="font-size-val"
+                    style="
+                      font-size: 12px;
+                      font-weight: 700;
+                      color: var(--primary);
+                    "
+                    >28px</span
+                  >
+                </div>
+                <input
+                  type="range"
+                  min="20"
+                  max="50"
+                  value="28"
+                  class="range-slider"
+                  id="slider-font-size"
+                  oninput="changeArabicFontSize(this.value)"
+                />
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i
+                    class="ri-translate-2"
+                    style="background: #fff7ed; color: #ea580c"
+                  ></i>
+                  <span>Tampilkan Terjemahan</span>
+                </div>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    id="toggle-translation"
+                    checked
+                    onchange="toggleTranslation(this)"
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-group-title">Audio & Murottal</div>
+            <div class="setting-card">
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i
+                    class="ri-disc-line"
+                    style="background: #fdf2f8; color: #db2777"
+                  ></i>
+                  <span>Putar Otomatis</span>
+                </div>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    id="toggle-autoplay"
+                    onchange="saveSetting('autoplay', this.checked)"
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-group-title">Data & Info</div>
+            <div class="setting-card">
+              <div class="setting-item" onclick="resetAppData()">
+                <div class="setting-label">
+                  <i
+                    class="ri-delete-bin-line"
+                    style="background: #fef2f2; color: #dc2626"
+                  ></i>
+                  <span style="color: #dc2626">Reset Aplikasi</span>
+                </div>
+                <i class="ri-arrow-right-s-line" style="color: #9ca3af"></i>
+              </div>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <i
+                    class="ri-information-line"
+                    style="background: #f3f4f6; color: #4b5563"
+                  ></i>
+                  <span>Versi Aplikasi</span>
+                </div>
+                <span style="font-size: 12px; color: #9ca3af"
+                  >v1.0.0 (Beta)</span
+                >
+              </div>
+            </div>
+
+            <div
+              style="text-align: center; margin-top: 30px; margin-bottom: 30px"
+            >
+              <p
+                style="font-size: 11px; color: var(--text-muted); opacity: 0.7"
+              >
+                Dibuat dengan ❤️ untuk Umat
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-tasbih" class="overlay-view">
+          <div class="detail-header">
+            <div class="btn-back" onclick="closeTasbih()">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+            <div class="detail-title">
+              <h2>Tasbih Digital</h2>
+              <p>Penghitung Dzikir</p>
+            </div>
+          </div>
+          <div class="tasbih-container">
+            <div class="tasbih-display" id="tasbih-count">0</div>
+
+            <button class="btn-tasbih-tap" onclick="addTasbihCount()">
+              <i class="ri-fingerprint-line"></i>
+              <span>Tekan</span>
+            </button>
+
+            <div class="tasbih-controls">
+              <button class="btn-tasbih-reset" onclick="resetTasbih()">
+                <i class="ri-refresh-line"></i> Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-doa" class="overlay-view">
+          <div class="detail-header">
+            <div class="btn-back" onclick="closeDoa()">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+            <div class="detail-title">
+              <h2>Doa Harian</h2>
+              <p>Kumpulan doa sehari-hari</p>
+            </div>
+            <div
+              class="font-trigger-btn btn-search-toggle"
+              onclick="toggleDoaSearch()"
+            >
+              <i class="ri-search-2-line" id="icon-search-doa"></i>
+            </div>
+          </div>
+
+          <div id="doa-search-bar" class="search-drawer">
+            <div class="search-wrap" style="margin-top: 0">
+              <input
+                type="text"
+                id="input-doa"
+                class="search-input"
+                placeholder="Cari doa (misal: tidur)..."
+                oninput="filterDoa(this.value)"
+              />
+              <i class="ri-search-2-line"></i>
+            </div>
+          </div>
+
+          <div
+            class="content-list"
+            id="list-doa"
+            style="overflow-y: auto; background: #f9fafb"
+          ></div>
+        </div>
+
+        <div id="view-tahlil" class="overlay-view">
+          <div class="detail-header">
+            <div class="btn-back" onclick="closeTahlil()">
+              <i class="ri-arrow-left-line"></i>
+            </div>
+            <div class="detail-title">
+              <h2>Baca Tahlil</h2>
+              <p>Rangkaian Dzikir & doa</p>
+            </div>
+          </div>
+
+          <div
+            class="content-list"
+            id="list-tahlil"
+            style="overflow-y: auto; padding: 20px"
+          ></div>
+        </div>
+      </div>
+
+      <div id="view-detail-surah" class="overlay-view">
+        <div class="detail-header">
+          <div class="btn-back" onclick="closeDetail()">
+            <i class="ri-arrow-left-line"></i>
+          </div>
+          <div class="detail-title">
+            <h2 id="det-name">Nama Surat</h2>
+            <p id="det-info">Arti & Jumlah Ayat</p>
+          </div>
+        </div>
+        <div class="detail-content" id="detail-list"></div>
+      </div>
+
+      <div id="view-mushaf" class="overlay-view">
+        <div class="detail-header">
+          <div class="btn-back" onclick="closeMushaf()">
+            <i class="ri-close-line"></i>
+          </div>
+          <div class="detail-title">
+            <h2>Mushaf Indonesia</h2>
+            <p>Tampilan Teks Halaman</p>
+          </div>
+          <div class="font-trigger-btn" onclick="openFontModal()">
+            <i class="ri-text"></i> Aa
+          </div>
+        </div>
+        <div class="mushaf-container">
+          <div id="mushaf-loader" class="mushaf-loader">
+            <i class="ri-loader-4-line spin" style="font-size: 32px"></i>
+            <span style="font-size: 12px; margin-top: 10px; opacity: 0.7"
+              >Memuat Halaman...</span
+            >
+          </div>
+          <div id="mushaf-content" class="mushaf-page-text"></div>
+        </div>
+        <div class="mushaf-controls">
+          <div class="nav-btn" onclick="prevPage()">
+            <i class="ri-arrow-left-s-line"></i>
+          </div>
+          <div class="page-input-wrap">
+            <span class="page-input-label">Hal.</span>
+            <input
+              type="number"
+              id="page-input"
+              class="page-input"
+              value="1"
+              min="1"
+              max="604"
+              onchange="jumpToPage(this.value)"
+            />
+          </div>
+          <div class="nav-btn" onclick="nextPage()">
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jadwal Sholat View -->
+      <div id="view-prayer-times" class="overlay-view">
+        <div class="detail-header">
+          <div class="btn-back" onclick="closePrayerTimes()">
+            <i class="ri-arrow-left-line"></i>
+          </div>
+          <div class="detail-title">
+            <h2>Jadwal Sholat</h2>
+            <p>Waktu sholat setempat</p>
+          </div>
+        </div>
+        <div class="prayer-times-container">
+          <div class="location-card">
+            <div class="location-header">
+              <div class="location-info">
+                <h3 id="location-name">Jakarta, Indonesia</h3>
+                <p id="location-coords">-6.2088° S, 106.8456° E</p>
+              </div>
+              <button class="location-change-btn" onclick="openLocationModal()">
+                <i class="ri-map-pin-line"></i> Ubah
+              </button>
+            </div>
+            <div class="date-info">
+              <i class="ri-calendar-line"></i>
+              <span id="current-date">Senin, 1 Januari 2023</span>
+            </div>
+          </div>
+
+          <div class="next-prayer-banner">
+            <div class="next-prayer-info">
+              <h4>Sholat Selanjutnya</h4>
+              <div class="next-prayer-time" id="next-prayer-name">Dzuhur</div>
+              <div class="countdown" id="next-prayer-countdown">01:23:45</div>
+            </div>
+            <div class="next-prayer-icon">
+              <i class="ri-time-line"></i>
+            </div>
+          </div>
+
+          <div class="prayer-times-grid" id="prayer-times-grid">
+            <div class="prayer-time-card">
+              <div class="prayer-name"><i class="ri-sun-line"></i> Subuh</div>
+              <div class="prayer-time" id="subuh-time">04:30</div>
+            </div>
+            <div class="prayer-time-card">
+              <div class="prayer-name"><i class="ri-sun-fill"></i> Dzuhur</div>
+              <div class="prayer-time" id="dzuhur-time">12:00</div>
+            </div>
+            <div class="prayer-time-card">
+              <div class="prayer-name">
+                <i class="ri-sun-cloudy-line"></i> Ashar
+              </div>
+              <div class="prayer-time" id="ashar-time">15:15</div>
+            </div>
+            <div class="prayer-time-card">
+              <div class="prayer-name">
+                <i class="ri-moon-line"></i> Maghrib
+              </div>
+              <div class="prayer-time" id="maghrib-time">18:00</div>
+            </div>
+            <div class="prayer-time-card">
+              <div class="prayer-name"><i class="ri-moon-fill"></i> Isya</div>
+              <div class="prayer-time" id="isya-time">19:15</div>
+            </div>
+            <div class="prayer-time-card">
+              <div class="prayer-name">
+                <i class="ri-sun-cloudy-fill"></i> Dhuha
+              </div>
+              <div class="prayer-time" id="dhuha-time">06:30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-qibla" class="overlay-view">
+        <div class="detail-header">
+          <div class="btn-back" onclick="closeQibla()">
+            <i class="ri-arrow-left-line"></i>
+          </div>
+          <div class="detail-title">
+            <h2>Arah Kiblat</h2>
+            <p>Cari arah Ka'bah</p>
+          </div>
+          <div
+            class="font-trigger-btn"
+            onclick="requestCompassPermission()"
+            style="width: 40px; justify-content: center"
+          >
+            <i class="ri-compass-3-line"></i>
+          </div>
+        </div>
+
+        <div class="qibla-container" id="qibla-container">
+          <div class="compass-wrap">
+            <div class="user-pointer"></div>
+            <div class="compass-disc" id="compass-disc">
+              <div class="qibla-indicator" id="qibla-indicator">
+                <div class="kaaba-icon-wrap">
+                  <div class="kaaba-arrow"></div>
+                  <i class="ri-kaaba-fill kaaba-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="qibla-info">
+            <div class="degree-text" id="alpha-text">0°</div>
+            <div class="degree-label">Arah Ponsel Anda</div>
+
+            <div class="qibla-status" id="qibla-status">
+              <i class="ri-smartphone-line"></i> Putar ponsel Anda
+            </div>
+          </div>
+
+          <div
+            id="ios-permission-overlay"
+            class="permission-overlay"
+            style="display: none"
+          >
+            <i
+              class="ri-compass-discover-line"
+              style="
+                font-size: 48px;
+                color: var(--primary);
+                margin-bottom: 15px;
+              "
+            ></i>
+            <h3>Izin Kompas</h3>
+            <p style="font-size: 14px; color: var(--text-muted)">
+              Aplikasi memerlukan izin untuk mengakses sensor orientasi ponsel
+              Anda.
+            </p>
+            <button class="btn-permission" onclick="requestCompassPermission()">
+              Izinkan Kompas
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Read View -->
+      <div id="view-last-read" class="overlay-view">
+        <div class="detail-header">
+          <div class="btn-back" onclick="closeLastRead()">
+            <i class="ri-arrow-left-line"></i>
+          </div>
+          <div class="detail-title">
+            <h2>Terakhir Baca</h2>
+            <p>Lanjutkan dari posisi terakhir</p>
+          </div>
+        </div>
+        <div class="last-read-container">
+          <div class="last-read-header">
+            <h2>Lanjutkan Membaca</h2>
+            <p>Pilih dari mana Anda ingin melanjutkan</p>
+          </div>
+          <div class="last-read-options" id="last-read-options">
+            <!-- Options will be dynamically generated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Modal -->
+      <div
+        id="location-modal"
+        class="location-modal"
+        onclick="closeLocationModal()"
+      >
+        <div class="location-modal-content" onclick="event.stopPropagation()">
+          <div class="location-modal-header">
+            <h3>Pilih Lokasi</h3>
+            <div class="location-close-modal" onclick="closeLocationModal()">
+              <i class="ri-close-line"></i>
+            </div>
+          </div>
+
+          <div class="location-buttons">
+            <button
+              class="location-btn location-btn-primary"
+              onclick="getCurrentLocation()"
+            >
+              <i class="ri-map-pin-user-line"></i> Lokasi Saya
+            </button>
+            <button
+              class="location-btn location-btn-secondary"
+              onclick="searchCity()"
+            >
+              <i class="ri-search-line"></i> Cari Kota
+            </button>
+          </div>
+
+          <div class="location-input-group">
+            <label for="city-search">Cari kota atau provinsi</label>
+            <input
+              type="text"
+              id="city-search"
+              class="location-input"
+              placeholder="Contoh: Jakarta, Surabaya"
+            />
+          </div>
+
+          <div class="location-cities" id="location-cities">
+            <div
+              class="city-option active"
+              onclick="selectCity('Jakarta', -6.2088, 106.8456)"
+            >
+              <span>Jakarta</span>
+              <i class="ri-check-line"></i>
+            </div>
+            <div
+              class="city-option"
+              onclick="selectCity('Surabaya', -7.2575, 112.7521)"
+            >
+              <span>Surabaya</span>
+              <i class="ri-check-line"></i>
+            </div>
+            <div
+              class="city-option"
+              onclick="selectCity('Bandung', -6.9175, 107.6191)"
+            >
+              <span>Bandung</span>
+              <i class="ri-check-line"></i>
+            </div>
+            <div
+              class="city-option"
+              onclick="selectCity('Medan', 3.5952, 98.6722)"
+            >
+              <span>Medan</span>
+              <i class="ri-check-line"></i>
+            </div>
+            <div
+              class="city-option"
+              onclick="selectCity('Semarang', -6.9667, 110.4167)"
+            >
+              <span>Semarang</span>
+              <i class="ri-check-line"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="font-modal" class="modal-overlay" onclick="closeFontModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Ganti Jenis Font</h3>
+            <div class="close-modal" onclick="closeFontModal()">
+              <i class="ri-close-line"></i>
+            </div>
+          </div>
+          <div class="font-list">
+            <div
+              class="font-option active"
+              id="font-opt-LPMQ"
+              onclick="changeMushafFont('LPMQ')"
+            >
+              <div class="font-info">
+                <span
+                  class="font-name"
+                  style="font-family: &quot;LPMQ Isep Misbah&quot;"
+                  >LPMQ Isep Misbah</span
+                >
+                <span class="font-desc">Standar Kemenag RI</span>
+              </div>
+              <i class="ri-check-line check-icon"></i>
+            </div>
+            <div
+              class="font-option"
+              id="font-opt-Scheherazade"
+              onclick="changeMushafFont('Scheherazade')"
+            >
+              <div class="font-info">
+                <span
+                  class="font-name"
+                  style="font-family: &quot;Scheherazade New&quot;"
+                  >Scheherazade New</span
+                >
+                <span class="font-desc">Standar Internasional</span>
+              </div>
+              <i class="ri-check-line check-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('murottal', this)">
+          <i class="ri-headphone-line"></i><span>Murottal</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('membaca', this)">
+          <i class="ri-book-open-line"></i><span>Membaca</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('explore', this)">
+          <i class="ri-compass-3-line"></i><span>Explore</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('setting', this)">
+          <i class="ri-settings-4-line"></i><span>Setting</span>
+        </div>
+      </nav>
+    </div>
+    <audio id="audio"></audio>
+
+    <script>
+      let allSurahData = [];
+      const audio = document.getElementById("audio");
+      let activeAudioId = null;
+
+      // --- TEMPEL KODE const defaultCities DI SINI ---
+      const defaultCities = [
+        { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
+        { name: "Surabaya", lat: -7.2575, lng: 112.7521 },
+        { name: "Bandung", lat: -6.9175, lng: 107.6191 },
+        { name: "Medan", lat: 3.5952, lng: 98.6722 },
+        { name: "Semarang", lat: -6.9667, lng: 110.4167 },
+      ];
+
+      // ... kode fetch API surat ...
+
+      fetch("https://equran.id/api/v2/surat")
+        .then((r) => r.json())
+        .then((json) => {
+          allSurahData = json.data;
+          renderMurottalList(allSurahData);
+          renderReadingList(allSurahData);
+        })
+        .catch((err) => {
+          document.getElementById("list-murottal").innerHTML =
+            '<div class="loading">Gagal memuat data.</div>';
+          document.getElementById("list-reading").innerHTML =
+            '<div class="loading">Gagal memuat data.</div>';
+        });
+
+      function renderMurottalList(data) {
+        const listEl = document.getElementById("list-murottal");
+        listEl.innerHTML = "";
+
+        // Konfigurasi SVG Cincin Progress
+        const size = 35;
+        const stroke = 3;
+        const center = size / 2;
+        const radius = 16;
+        const circumference = 2 * Math.PI * radius;
+
+        const svgRing = `
+                <svg class="progress-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+                    <circle class="prog-bg" cx="${center}" cy="${center}" r="${radius}" stroke-width="${stroke}" />
+                    <circle class="prog-bar" cx="${center}" cy="${center}" r="${radius}" stroke-width="${stroke}" style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${circumference};" />
+                </svg>`;
+
+        data.forEach((s) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.id = `card-${s.nomor}`;
+          div.innerHTML = `
+                    <div class="info"> 
+                        <div class="badge">${s.nomor}</div>
+                        <div class="details">
+                            <h3>${s.namaLatin}</h3>
+                            <span class="meaning">${s.arti}</span>
+                            <div class="meta-tags">
+                                <span class="tag">${s.jumlahAyat} Ayat</span>
+                                <span class="tag"><i class="ri-map-pin-line"></i> ${s.tempatTurun}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="arabic">${s.nama}</div>
+                        <div class="player-wrap">
+                            <span class="timer" id="time-${s.nomor}"></span>
+                            <div class="btn-play-circle" onclick="togglePlay(event, ${s.nomor}, '${s.audioFull["05"]}')">
+                                ${svgRing}
+                                <i class="ri-play-fill" id="icon-${s.nomor}"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          listEl.appendChild(div);
+        });
+      }
+
+      function renderReadingList(data) {
+        const listEl = document.getElementById("list-reading");
+        listEl.innerHTML = "";
+        data.forEach((s) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.onclick = () => openDetail(s);
+          div.innerHTML = `
+                
+                    <div class="info">
+                        <div class="badge" style="background: #F3F4F6; color: #374151;">${s.nomor}</div>
+                        <div class="details">
+                            <h3>${s.namaLatin}</h3>
+                            <span class="meaning">${s.arti}</span>
+                            <div class="meta-tags"><span class="tag"><i class="ri-map-pin-line"></i> ${s.tempatTurun}</span></div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="arabic" style="color:var(--text-main); font-size:24px;">${s.nama}</div>
+                        <div class="btn-read-arrow"><i class="ri-arrow-right-s-line"></i></div>
+                    </div>
+                `;
+          listEl.appendChild(div);
+        });
+      }
+
+      function filterSurah(val, targetId) {
+        const v = val.toLowerCase();
+        const container = document.getElementById(targetId);
+        const cards = container.getElementsByClassName("card");
+        Array.from(cards).forEach((c) => {
+          c.style.display = c.innerText.toLowerCase().includes(v)
+            ? "flex"
+            : "none";
+        });
+      }
+
+      function openDetail(surah) {
+        const view = document.getElementById("view-detail-surah");
+        const list = document.getElementById("detail-list");
+        const title = document.getElementById("det-name");
+        const info = document.getElementById("det-info");
+
+        title.innerText = surah.namaLatin;
+        info.innerText = `${surah.arti} • ${surah.jumlahAyat} Ayat`;
+        list.innerHTML =
+          '<div class="loading"><i class="ri-loader-4-line spin"></i><br>Loading...</div>';
+        view.classList.add("open");
+
+        fetch(`https://equran.id/api/v2/surat/${surah.nomor}`)
+          .then((r) => r.json())
+          .then((res) => {
+            const data = res.data;
+            let html = "";
+            if (surah.nomor !== 1 && surah.nomor !== 9) {
+              html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>`;
+            }
+            data.ayat.forEach((a) => {
+              html += `
+    <div class="verse-item" data-surah="${surah.nomor}" data-ayah="${a.nomorAyat}">
+      <div class="verse-toolbar">
+        <div class="verse-num">${a.nomorAyat}</div>
+        <div class="verse-opts">
+          <i class="ri-bookmark-line" onclick="toast('Ayat ditandai')"></i>
+          <i class="ri-share-forward-line" onclick="toast('Tautan disalin')"></i>
+        </div>
+      </div>
+
+      <div class="verse-arabic">${a.teksArab}</div>
+
+      <!-- LATIN -->
+      <div class="verse-latin">${a.teksLatin}</div>
+
+      <!-- TERJEMAHAN -->
+      <div class="verse-translation">${a.teksIndonesia}</div>
+    </div>
+  `;
+            });
+
+            list.innerHTML = html;
+
+            // Apply font size setting
+            const savedSize = localStorage.getItem("setting_font_size") || "28";
+            document
+              .querySelectorAll(".verse-arabic")
+              .forEach((el) => (el.style.fontSize = savedSize + "px"));
+
+            // Set up scroll tracking for last read
+            setupScrollTracking(surah.nomor);
+          })
+          .catch((err) => {
+            list.innerHTML =
+              '<div class="empty-state">Gagal memuat ayat.</div>';
+          });
+      }
+
+      function closeDetail() {
+        document.getElementById("view-detail-surah").classList.remove("open");
+      }
+
+      // Function to track scroll position for last read
+      function setupScrollTracking(surahNumber) {
+        const detailContent = document.getElementById("detail-list");
+
+        // Set up scroll event listener
+        detailContent.addEventListener("scroll", function () {
+          const scrollTop = detailContent.scrollTop;
+          const scrollHeight = detailContent.scrollHeight;
+          const clientHeight = detailContent.clientHeight;
+
+          // Get all verse items
+          const verseItems = detailContent.querySelectorAll(".verse-item");
+
+          // Find the current visible verse
+          let currentVerse = null;
+          for (let i = 0; i < verseItems.length; i++) {
+            const item = verseItems[i];
+            const itemTop = item.offsetTop;
+            const itemHeight = item.offsetHeight;
+
+            // Check if this verse is in view
+            if (
+              scrollTop + clientHeight * 0.5 >= itemTop &&
+              scrollTop + clientHeight * 0.5 <= itemTop + itemHeight
+            ) {
+              currentVerse = {
+                surah: surahNumber,
+                ayah: parseInt(item.dataset.ayah),
+                timestamp: new Date().toISOString(),
+              };
+              break;
+            }
+          }
+
+          // Save current position to localStorage
+          if (currentVerse) {
+            localStorage.setItem(
+              "last_read_surah",
+              JSON.stringify(currentVerse),
+            );
+          }
+        });
+      }
+
+      let currentMushafPage = 1;
+      function openMushaf() {
+        document.getElementById("view-mushaf").classList.add("open");
+        const content = document.getElementById("mushaf-content");
+        if (content.innerHTML.trim() === "") {
+          // Check if there's a saved page
+          const savedPage = localStorage.getItem("last_read_mushaf_page");
+          if (savedPage) {
+            currentMushafPage = parseInt(savedPage);
+          }
+          loadMushafText(currentMushafPage);
+        }
+      }
+      function closeMushaf() {
+        document.getElementById("view-mushaf").classList.remove("open");
+      }
+
+      function loadMushafText(page) {
+        const loader = document.getElementById("mushaf-loader");
+        const content = document.getElementById("mushaf-content");
+        const input = document.getElementById("page-input");
+
+        content.classList.remove("loaded");
+        content.style.opacity = "0";
+        loader.style.display = "flex";
+        input.value = page;
+
+        // Save current page to localStorage
+        localStorage.setItem("last_read_mushaf_page", page.toString());
+
+        fetch(`https://api.alquran.cloud/v1/page/${page}/quran-uthmani`)
+          .then((r) => r.json())
+          .then((res) => {
+            if (res.code === 200) {
+              renderMushafPage(res.data.ayahs);
+              loader.style.display = "none";
+              content.classList.add("loaded");
+              content.style.opacity = "1";
+            } else {
+              throw new Error("API Error");
+            }
+          })
+          .catch((err) => {
+            loader.innerHTML =
+              '<i class="ri-close-circle-line" style="font-size: 32px; color: #EF4444"></i><span style="margin-top:10px">Gagal memuat teks.</span>';
+          });
+      }
+
+      function renderMushafPage(ayahs) {
+        const content = document.getElementById("mushaf-content");
+        let html = "";
+
+        ayahs.forEach((ayah) => {
+          if (ayah.numberInSurah === 1) {
+            const surahName = ayah.surah.name;
+            html += `<div class="surah-separator"><div class="surah-box"><span class="surah-name-display">${surahName}</span></div>`;
+
+            // Tampilkan Bismillah Header kecuali Fatihah (1) dan Taubah (9)
+            if (ayah.surah.number !== 1 && ayah.surah.number !== 9) {
+              html += `<span class="bismillah-text">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</span>`;
+            }
+            html += `</div>`;
+          }
+
+          const arabNum = toArabicNumerals(ayah.numberInSurah);
+          let text = ayah.text;
+
+          if (
+            ayah.numberInSurah === 1 &&
+            ayah.surah.number !== 1 &&
+            ayah.surah.number !== 9
+          ) {
+            text = text.replace(
+              /^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/,
+              "",
+            );
+          }
+
+          html += `${text} <span class="ayah-marker">۝${arabNum}</span> `;
+        });
+
+        content.innerHTML = html;
+      }
+
+      function toArabicNumerals(n) {
+        const arabicNumbers = [
+          "٠",
+          "١",
+          "٢",
+          "٣",
+          "٤",
+          "٥",
+          "٦",
+          "٧",
+          "٨",
+          "٩",
+        ];
+        return n.toString().replace(/\d/g, (d) => arabicNumbers[d]);
+      }
+      function nextPage() {
+        if (currentMushafPage < 604) {
+          currentMushafPage++;
+          loadMushafText(currentMushafPage);
+        } else {
+          toast("Ini halaman terakhir");
+        }
+      }
+      function prevPage() {
+        if (currentMushafPage > 1) {
+          currentMushafPage--;
+          loadMushafText(currentMushafPage);
+        } else {
+          toast("Ini halaman pertama");
+        }
+      }
+      function jumpToPage(val) {
+        let p = parseInt(val);
+        if (p >= 1 && p <= 604) {
+          currentMushafPage = p;
+          loadMushafText(p);
+        } else {
+          toast("Halaman tidak valid");
+          document.getElementById("page-input").value = currentMushafPage;
+        }
+      }
+      function toast(msg) {
+        const existing = document.querySelector(".toast-msg");
+        if (existing) existing.remove();
+        const d = document.createElement("div");
+        d.className = "toast-msg";
+        d.style.cssText = `position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(31, 41, 55, 0.9); color: white; padding: 10px 20px; border-radius: 20px; font-size: 12px; z-index: 100; animation: fadeIn 0.3s;`;
+        d.innerText = msg;
+        document.body.appendChild(d);
+        setTimeout(() => {
+          d.style.opacity = 0;
+          setTimeout(() => d.remove(), 300);
+        }, 2000);
+      }
+      function switchTab(tabName, element) {
+        document.querySelectorAll(".view-section").forEach((view) => {
+          view.classList.remove("active");
+        });
+        document
+          .querySelectorAll(".overlay-view")
+          .forEach((ov) => ov.classList.remove("open"));
+        const targetView = document.getElementById(`view-${tabName}`);
+        if (targetView) targetView.classList.add("active");
+        document.querySelectorAll(".nav-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        element.classList.add("active");
+      }
+
+      function togglePlay(e, id, url) {
+        e.stopPropagation();
+        if (activeAudioId === id) {
+          if (audio.paused) audio.play();
+          else audio.pause();
+        } else {
+          if (activeAudioId) resetUI(activeAudioId);
+          activeAudioId = id;
+          audio.src = url;
+          const card = document.getElementById(`card-${id}`);
+          const icon = document.getElementById(`icon-${id}`);
+          const time = document.getElementById(`time-${id}`);
+          if (card) card.classList.add("active");
+          if (icon) icon.className = "ri-loader-4-line spin";
+          if (time) time.innerText = "...";
+          audio.play();
+        }
+      }
+
+      audio.addEventListener("playing", () => {
+        if (activeAudioId)
+          document.getElementById(`icon-${activeAudioId}`).className =
+            "ri-pause-fill";
+      });
+      audio.addEventListener("pause", () => {
+        if (activeAudioId)
+          document.getElementById(`icon-${activeAudioId}`).className =
+            "ri-play-fill";
+      });
+      audio.addEventListener("ended", () => {
+        if (activeAudioId) {
+          resetUI(activeAudioId);
+
+          // LOGIK AUTOPLAY
+          const isAutoplay =
+            localStorage.getItem("setting_autoplay") === "true";
+          if (isAutoplay) {
+            // Cari surat berikutnya
+            const nextId = activeAudioId + 1;
+            if (nextId <= 114) {
+              // Kita butuh data URL audio surat berikutnya.
+              // Karena array allSurahData ada di memori, kita cari:
+              const nextSurah = allSurahData.find((s) => s.nomor === nextId);
+              if (nextSurah) {
+                // Scroll ke kartu surat berikutnya (opsional)
+                const nextCard = document.getElementById(`card-${nextId}`);
+                if (nextCard)
+                  nextCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+
+                // Mainkan dengan delay sedikit
+                setTimeout(() => {
+                  togglePlay(
+                    new Event("click"),
+                    nextId,
+                    nextSurah.audioFull["05"],
+                  );
+                }, 1000);
+              }
+            }
+          }
+          activeAudioId = null;
+        }
+      });
+
+      audio.addEventListener("timeupdate", () => {
+        if (!activeAudioId) return;
+        const dur = audio.duration;
+        const cur = audio.currentTime;
+        if (isNaN(dur)) return;
+        const left = dur - cur;
+        const timeEl = document.getElementById(`time-${activeAudioId}`);
+        if (timeEl) timeEl.innerText = "-" + fmt(left);
+
+        const ringContainer = document.querySelector(
+          `#card-${activeAudioId} .prog-bar`,
+        );
+        if (ringContainer) {
+          const radius = 16;
+          const C = 2 * Math.PI * radius;
+          const offset = C - (cur / dur) * C;
+          ringContainer.style.strokeDashoffset = offset;
+        }
+      });
+
+      function resetUI(id) {
+        const card = document.getElementById(`card-${id}`);
+        const icon = document.getElementById(`icon-${id}`);
+        const ringContainer = document.querySelector(`#card-${id} .prog-bar`);
+        const time = document.getElementById(`time-${id}`);
+        const C = 2 * Math.PI * 16;
+        if (card) card.classList.remove("active");
+        if (icon) icon.className = "ri-play-fill";
+        if (time) time.innerText = "";
+        if (ringContainer) ringContainer.style.strokeDashoffset = C;
+      }
+
+      function fmt(s) {
+        if (s < 0) s = 0;
+        const m = Math.floor(s / 60);
+        const sc = Math.floor(s % 60);
+        return `${m}:${sc < 10 ? "0" + sc : sc}`;
+      }
+
+      // --- LOGIC GANTI FONT & MODAL POPUP ---
+      // 1. Kontrol Modal
+      function openFontModal() {
+        document.getElementById("font-modal").classList.add("open");
+      }
+
+      function closeFontModal() {
+        document.getElementById("font-modal").classList.remove("open");
+      }
+
+      // 2. Fungsi Mengganti Font dan Update UI Modal
+      function changeMushafFont(fontType) {
+        const contentEl = document.getElementById("mushaf-content");
+
+        // Logic Style Font
+        if (fontType === "LPMQ") {
+          contentEl.style.fontFamily = "'LPMQ Isep Misbah', serif";
+          contentEl.style.lineHeight = "2.4";
+          contentEl.style.letterSpacing = "normal";
+        } else {
+          contentEl.style.fontFamily = "'Scheherazade New', serif";
+          contentEl.style.lineHeight = "2.0";
+          contentEl.style.letterSpacing = "0px";
+        }
+
+        // Simpan Preferensi
+        localStorage.setItem("pref_mushaf_font", fontType);
+
+        // Update Tampilan Centang pada Modal
+        updateModalSelection(fontType);
+      }
+
+      function updateModalSelection(selectedFont) {
+        // Hapus kelas active dari semua opsi
+        document
+          .querySelectorAll(".font-option")
+          .forEach((el) => el.classList.remove("active"));
+
+        // Tambah kelas active ke opsi yang dipilih
+        const selectedEl = document.getElementById(`font-opt-${selectedFont}`);
+        if (selectedEl) {
+          selectedEl.classList.add("active");
+        }
+      }
+
+      // --- LAST READ FUNCTIONS ---
+      function openLastRead() {
+        document.getElementById("view-last-read").classList.add("open");
+        renderLastReadOptions();
+      }
+
+      function closeLastRead() {
+        document.getElementById("view-last-read").classList.remove("open");
+      }
+
+      function renderLastReadOptions() {
+        const container = document.getElementById("last-read-options");
+        // 1. Ambil elemen header
+        const header = document.querySelector(".last-read-header");
+
+        container.innerHTML = "";
+
+        // Get last read data
+        const lastReadSurah = JSON.parse(
+          localStorage.getItem("last_read_surah") || "null",
+        );
+        const lastReadMushafPage = localStorage.getItem(
+          "last_read_mushaf_page",
+        );
+
+        // Check if there's any data
+        if (!lastReadSurah && !lastReadMushafPage) {
+          // 2. JIKA KOSONG: Sembunyikan Header
+          if (header) header.style.display = "none";
+
+          container.innerHTML = `
+            <div class="empty-last-read">
+                <i class="ri-book-2-line"></i>
+                <h3>Belum Ada Riwayat Bacaan</h3>
+                <p>Anda belum memiliki riwayat membaca. Mulai membaca untuk menyimpan posisi terakhir Anda.</p>
+                <button class="btn-explore" onclick="closeLastRead(); switchTab('membaca', document.querySelector('.nav-item:nth-child(2)'))">
+                    <i class="ri-book-open-line"></i> Mulai Membaca
+                </button>
+            </div>
+        `;
+          return;
+        }
+
+        // 3. JIKA ADA DATA: Tampilkan Header
+        if (header) header.style.display = "block";
+
+        // Render surah option if available
+        if (lastReadSurah) {
+          const surahData = allSurahData.find(
+            (s) => s.nomor === lastReadSurah.surah,
+          );
+          if (surahData) {
+            const date = new Date(lastReadSurah.timestamp);
+            const formattedDate = date.toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+            const surahOption = document.createElement("div");
+            surahOption.className = "last-read-option surah";
+            surahOption.innerHTML = `
+                <div class="last-read-option-icon">
+                    <i class="ri-book-2-line"></i>
+                </div>
+                <div class="last-read-option-info">
+                    <div class="last-read-option-title">${surahData.namaLatin} - Ayat ${lastReadSurah.ayah}</div>
+                    <div class="last-read-option-desc">${formattedDate}</div>
+                </div>
+                <div class="last-read-option-arrow">
+                    <i class="ri-arrow-right-s-line"></i>
+                </div>
+            `;
+
+            surahOption.addEventListener("click", () => {
+              closeLastRead();
+              openDetailAndScrollToAyah(surahData, lastReadSurah.ayah);
+            });
+
+            container.appendChild(surahOption);
+          }
+        }
+
+        // Render mushaf option if available
+        if (lastReadMushafPage) {
+          const mushafOption = document.createElement("div");
+          mushafOption.className = "last-read-option mushaf";
+          mushafOption.innerHTML = `
+            <div class="last-read-option-icon">
+                <i class="ri-book-open-line"></i>
+            </div>
+            <div class="last-read-option-info">
+                <div class="last-read-option-title">Halaman Mushaf ${lastReadMushafPage}</div>
+                <div class="last-read-option-desc">Lanjutkan membaca dari halaman ${lastReadMushafPage}</div>
+            </div>
+            <div class="last-read-option-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        `;
+
+          mushafOption.addEventListener("click", () => {
+            closeLastRead();
+            openMushafAndJumpToPage(parseInt(lastReadMushafPage));
+          });
+
+          container.appendChild(mushafOption);
+        }
+      }
+
+      function openDetailAndScrollToAyah(surah, ayahNumber) {
+        // 1. Buka view detail
+        openDetail(surah);
+
+        // 2. Tunggu sebentar agar konten termuat
+        const checkExist = setInterval(() => {
+          const detailList = document.getElementById("detail-list");
+          // Cari elemen ayat yang dituju
+          const targetVerse = detailList.querySelector(
+            `.verse-item[data-ayah="${ayahNumber}"]`,
+          );
+
+          // Jika elemen sudah ditemukan
+          if (targetVerse) {
+            clearInterval(checkExist); // Hentikan pengecekan
+
+            // --- METODE BARU: KALKULASI ABSOLUT ---
+            // Kita gunakan setTimeout kecil untuk memastikan layout sudah stabil
+            setTimeout(() => {
+              // 1. Ambil posisi kotak container dan kotak ayat
+              const containerRect = detailList.getBoundingClientRect();
+              const targetRect = targetVerse.getBoundingClientRect();
+
+              // 2. Hitung selisih jarak antara atas container dengan atas ayat
+              // (Ini mendapatkan posisi ayat relatif terhadap viewport container)
+              const relativeTop = targetRect.top - containerRect.top;
+
+              // 3. Hitung posisi scroll yang harus dituju:
+              // Posisi Scroll Sekarang + Jarak Relatif - 15px (Gap)
+              const targetScrollPos = detailList.scrollTop + relativeTop - 15;
+
+              // 4. Eksekusi Scroll
+              detailList.scrollTo({
+                top: targetScrollPos,
+                behavior: "smooth",
+              });
+
+              // Efek Highlight
+              targetVerse.style.transition = "background 0.5s";
+              targetVerse.style.background = "var(--primary-light)";
+              setTimeout(() => {
+                targetVerse.style.background = "";
+              }, 2000);
+            }, 100); // Delay 100ms agar aman dari glitch animasi
+          }
+        }, 100); // Cek ketersediaan elemen setiap 100ms
+
+        // Safety timeout: Berhenti jika lebih dari 10 detik (koneksi lambat)
+        setTimeout(() => clearInterval(checkExist), 10000);
+      }
+
+      function openMushafAndJumpToPage(pageNumber) {
+        // Open the mushaf view
+        openMushaf();
+
+        // Jump to the specific page
+        currentMushafPage = pageNumber;
+        loadMushafText(currentMushafPage);
+      }
+
+      // --- JADWAL SHOLAT FUNCTIONS ---
+      function openPrayerTimes() {
+        document.getElementById("view-prayer-times").classList.add("open");
+      }
+
+      function closePrayerTimes() {
+        document.getElementById("view-prayer-times").classList.remove("open");
+      }
+
+      function updateCurrentDate() {
+        const dateElement = document.getElementById("current-date");
+        const now = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+        dateElement.textContent = now.toLocaleDateString("id-ID", options);
+      }
+
+      function loadPrayerTimes(lat, lng, cityName) {
+        // Simpan lokasi saat ini
+        localStorage.setItem(
+          "prayer_location",
+          JSON.stringify({ lat, lng, name: cityName }),
+        );
+
+        // Update UI lokasi
+        document.getElementById("location-name").textContent = cityName;
+        document.getElementById("location-coords").textContent =
+          `${lat.toFixed(4)}° ${lat >= 0 ? "N" : "S"}, ${lng.toFixed(4)}° ${lng >= 0 ? "E" : "W"}`;
+
+        // Hitung tanggal Hijriah
+        const today = new Date();
+        const date = today.getDate();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+
+        // Menggunakan API untuk jadwal sholat
+        // Gunakan API alternatif jika API utama tidak tersedia
+        const apiUrl = `https://api.aladhan.com/v1/timings/${date}-${month}-${year}?latitude=${lat}&longitude=${lng}&method=11`;
+
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 200) {
+              const timings = data.data.timings;
+
+              // Update waktu sholat
+              document.getElementById("subuh-time").textContent = formatTime(
+                timings.Fajr,
+              );
+              document.getElementById("dzuhur-time").textContent = formatTime(
+                timings.Dhuhr,
+              );
+              document.getElementById("ashar-time").textContent = formatTime(
+                timings.Asr,
+              );
+              document.getElementById("maghrib-time").textContent = formatTime(
+                timings.Maghrib,
+              );
+              document.getElementById("isya-time").textContent = formatTime(
+                timings.Isha,
+              );
+
+              // Hitung waktu dhuha (sekitar 15 menit setelah sunrise)
+              const sunriseTime = parseTime(timings.Sunrise);
+              const dhuhaTime = new Date(sunriseTime.getTime() + 15 * 60000);
+              document.getElementById("dhuha-time").textContent =
+                formatTime(dhuhaTime);
+
+              // Tentukan sholat selanjutnya dan hitung countdown
+              updateNextPrayer(timings);
+
+              // Highlight sholat aktif
+              highlightCurrentPrayer(timings);
+            } else {
+              // Fallback ke data default jika API gagal
+              loadDefaultPrayerTimes();
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading prayer times:", error);
+            // Fallback ke data default jika API gagal
+            loadDefaultPrayerTimes();
+          });
+      }
+
+      function loadDefaultPrayerTimes() {
+        // Data default jika API gagal
+        document.getElementById("subuh-time").textContent = "04:30";
+        document.getElementById("dzuhur-time").textContent = "12:00";
+        document.getElementById("ashar-time").textContent = "15:15";
+        document.getElementById("maghrib-time").textContent = "18:00";
+        document.getElementById("isya-time").textContent = "19:15";
+        document.getElementById("dhuha-time").textContent = "06:30";
+
+        // Set default next prayer
+        document.getElementById("next-prayer-name").textContent = "Dzuhur";
+        document.getElementById("next-prayer-countdown").textContent =
+          "01:23:45";
+
+        // Highlight default prayer
+        document.querySelectorAll(".prayer-time-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+        document
+          .querySelector(".prayer-time-card:nth-child(2)")
+          .classList.add("active");
+      }
+
+      function formatTime(timeString) {
+        // Format "HH:MM" dari API
+        if (typeof timeString === "string") {
+          return timeString.substring(0, 5);
+        }
+        // Format Date object
+        const hours = timeString.getHours().toString().padStart(2, "0");
+        const minutes = timeString.getMinutes().toString().padStart(2, "0");
+        return `${hours}:${minutes}`;
+      }
+
+      function parseTime(timeString) {
+        // Parse "HH:MM" string to Date object
+        const [hours, minutes] = timeString.split(":").map(Number);
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+      }
+
+      // 1. Tambahkan variabel ini di bagian paling atas script (di bawah let activeAudioId)
+      let countdownInterval = null;
+
+      // ... kode lainnya ...
+
+      // 2. Ganti fungsi updateNextPrayer dengan versi perbaikan ini:
+      function updateNextPrayer(timings) {
+        const now = new Date();
+        const prayers = [
+          { name: "Subuh", time: parseTime(timings.Fajr) },
+          { name: "Dzuhur", time: parseTime(timings.Dhuhr) },
+          { name: "Ashar", time: parseTime(timings.Asr) },
+          { name: "Maghrib", time: parseTime(timings.Maghrib) },
+          { name: "Isya", time: parseTime(timings.Isha) },
+        ];
+
+        // Cari sholat selanjutnya
+        let nextPrayer = null;
+        for (const prayer of prayers) {
+          // Jika waktu sholat sudah lewat hari ini, anggap untuk besok (logika sederhana)
+          // Catatan: Untuk akurasi penuh besok, idealnya fetch API untuk tanggal besok,
+          // tapi logika ini cukup untuk handle countdown visual sementara.
+          if (prayer.time <= now) {
+            prayer.time.setDate(prayer.time.getDate() + 1);
+          }
+
+          if (!nextPrayer || prayer.time < nextPrayer.time) {
+            nextPrayer = prayer;
+          }
+        }
+
+        if (nextPrayer) {
+          document.getElementById("next-prayer-name").textContent =
+            nextPrayer.name;
+
+          // --- PERBAIKAN DI SINI ---
+
+          // 1. Hentikan interval yang sedang berjalan (jika ada)
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+          }
+
+          // 2. Jalankan fungsi update sekali agar tidak menunggu 1 detik
+          updateCountdown(nextPrayer.time);
+
+          // 3. Simpan ID interval baru ke variabel global
+          countdownInterval = setInterval(() => {
+            updateCountdown(nextPrayer.time);
+          }, 1000);
+        }
+      }
+
+      function updateCountdown(targetTime) {
+        const now = new Date();
+        const diff = targetTime - now;
+
+        if (diff <= 0) {
+          // Reload prayer times if countdown reaches zero
+          const location = JSON.parse(
+            localStorage.getItem("prayer_location") ||
+              '{"lat":-6.2088,"lng":106.8456,"name":"Jakarta"}',
+          );
+          loadPrayerTimes(location.lat, location.lng, location.name);
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById("next-prayer-countdown").textContent =
+          `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      }
+
+      function highlightCurrentPrayer(timings) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const currentTime = currentHour * 60 + currentMinute;
+
+        // Parse prayer times
+        const subuh = parseTime(timings.Fajr);
+        const dzuhur = parseTime(timings.Dhuhr);
+        const ashar = parseTime(timings.Asr);
+        const maghrib = parseTime(timings.Maghrib);
+        const isya = parseTime(timings.Isha);
+
+        // Convert to minutes for comparison
+        const subuhMinutes = subuh.getHours() * 60 + subuh.getMinutes();
+        const dzuhurMinutes = dzuhur.getHours() * 60 + dzuhur.getMinutes();
+        const asharMinutes = ashar.getHours() * 60 + ashar.getMinutes();
+        const maghribMinutes = maghrib.getHours() * 60 + maghrib.getMinutes();
+        const isyaMinutes = isya.getHours() * 60 + isya.getMinutes();
+
+        // Remove all active classes
+        document.querySelectorAll(".prayer-time-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+
+        // Determine current prayer time and highlight it
+        if (currentTime >= subuhMinutes && currentTime < dzuhurMinutes) {
+          document
+            .querySelector(".prayer-time-card:nth-child(1)")
+            .classList.add("active");
+        } else if (currentTime >= dzuhurMinutes && currentTime < asharMinutes) {
+          document
+            .querySelector(".prayer-time-card:nth-child(2)")
+            .classList.add("active");
+        } else if (
+          currentTime >= asharMinutes &&
+          currentTime < maghribMinutes
+        ) {
+          document
+            .querySelector(".prayer-time-card:nth-child(3)")
+            .classList.add("active");
+        } else if (currentTime >= maghribMinutes && currentTime < isyaMinutes) {
+          document
+            .querySelector(".prayer-time-card:nth-child(4)")
+            .classList.add("active");
+        } else if (currentTime >= isyaMinutes || currentTime < subuhMinutes) {
+          document
+            .querySelector(".prayer-time-card:nth-child(5)")
+            .classList.add("active");
+        }
+      }
+
+      // --- LOKASI MODAL FUNCTIONS ---
+      // --- CARI DAN GANTI FUNGSI openLocationModal() DENGAN INI ---
+
+      // --- FUNGSI BUKA MODAL (DIPERBARUI UNTUK MEMUAT RIWAYAT + DEFAULT) ---
+      function openLocationModal() {
+        // 1. Reset Input Pencarian
+        document.getElementById("city-search").value = "";
+
+        const citiesContainer = document.getElementById("location-cities");
+        citiesContainer.innerHTML = ""; // Bersihkan container
+
+        // 2. Ambil Riwayat dari LocalStorage
+        const history =
+          JSON.parse(localStorage.getItem("prayer_city_history")) || [];
+
+        // 3. Gabungkan: [Riwayat] + [Default Cities]
+        // Filter kota default agar tidak muncul double jika sudah ada di riwayat
+        const historyNames = history.map((h) => h.name);
+        const filteredDefaults = defaultCities.filter(
+          (d) => !historyNames.includes(d.name),
+        );
+
+        const finalDisplayList = [...history, ...filteredDefaults];
+
+        // 4. Render HTML
+        finalDisplayList.forEach((city, index) => {
+          // Cek apakah ini item dari riwayat (index kurang dari panjang history)
+          const isHistory = index < history.length;
+
+          // Ikon berbeda untuk riwayat (jam) dan default (pin map)
+          const iconClass = isHistory ? "ri-history-line" : "ri-map-pin-line";
+          const iconColor = isHistory ? "#F59E0B" : "var(--primary)"; // Kuning untuk riwayat
+
+          const div = document.createElement("div");
+          div.className = "city-option";
+
+          // Cek jika ini lokasi yang sedang aktif sekarang
+          const currentLocation = JSON.parse(
+            localStorage.getItem("prayer_location") || "{}",
+          );
+          if (currentLocation.name === city.name) div.classList.add("active");
+
+          div.onclick = () => selectCity(city.name, city.lat, city.lng);
+
+          div.innerHTML = `
+            <div style="display:flex; flex-direction:column;">
+                <span style="font-weight:600; font-size:14px; color:var(--text-main);">${city.name}</span>
+                ${isHistory ? '<span style="font-size:10px; color:#9CA3AF;">Terakhir dicari</span>' : ""}
+            </div>
+            <i class="${iconClass}" style="color:${iconColor}; font-size: 16px;"></i>
+        `;
+          citiesContainer.appendChild(div);
+        });
+
+        // 5. Tampilkan Modal
+        document.getElementById("location-modal").classList.add("open");
+      }
+
+      function closeLocationModal() {
+        document.getElementById("location-modal").classList.remove("open");
+      }
+
+      function getCurrentLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              // Reverse geocoding untuk mendapatkan nama kota
+              fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  const cityName =
+                    data.address.city ||
+                    data.address.town ||
+                    data.address.village ||
+                    "Lokasi Saya";
+                  loadPrayerTimes(lat, lng, cityName);
+                  closeLocationModal();
+                  toast(`Lokasi diperbarui: ${cityName}`);
+                })
+                .catch((error) => {
+                  console.error("Error getting city name:", error);
+                  loadPrayerTimes(lat, lng, "Lokasi Saya");
+                  closeLocationModal();
+                  toast("Lokasi diperbarui");
+                });
+            },
+            (error) => {
+              console.error("Error getting location:", error);
+              toast(
+                "Gagal mendapatkan lokasi. Silakan pilih kota secara manual.",
+              );
+            },
+          );
+        } else {
+          toast("Geolokasi tidak didukung oleh browser Anda.");
+        }
+      }
+
+      function searchCity() {
+        const searchTerm = document.getElementById("city-search").value.trim();
+        if (!searchTerm) {
+          toast("Masukkan nama kota");
+          return;
+        }
+
+        const citiesContainer = document.getElementById("location-cities");
+        citiesContainer.innerHTML =
+          '<div style="text-align:center; padding:20px; color:#9CA3AF;"><i class="ri-loader-4-line spin"></i> Mencari...</div>';
+
+        fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${searchTerm}&countrycodes=id&addressdetails=1&limit=15&accept-language=id`,
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            citiesContainer.innerHTML = "";
+
+            if (data && data.length > 0) {
+              // Set ini akan menyimpan "Kunci Unik" dari apa yang SUDAH ditampilkan
+              const displayedEntries = new Set();
+
+              data.forEach((city) => {
+                // --- 1. BERSIHKAN NAMA ---
+                // Hapus awalan apapun yang datang dari API agar kita bisa melabeli ulang dengan benar
+                let cleanName = city.name.replace(
+                  /^(Kota|Kabupaten|Kecamatan|Kelurahan|Desa)\s+/i,
+                  "",
+                );
+
+                const type = city.addresstype;
+                const address = city.address;
+
+                // --- 2. DETEKSI HIERARKI (Induk/Anak) ---
+                // Cek apakah lokasi ini punya induk (Kota/Kabupaten lain)
+                let hasParent = false;
+                if (
+                  address.city &&
+                  !cleanName.includes(address.city.replace(/^(Kota)\s+/i, ""))
+                )
+                  hasParent = true;
+                if (
+                  address.county &&
+                  !cleanName.includes(
+                    address.county.replace(/^(Kabupaten)\s+/i, ""),
+                  )
+                )
+                  hasParent = true;
+
+                // --- 3. TENTUKAN LABEL (PREFIX) ---
+                let finalName = cleanName;
+
+                if (!hasParent) {
+                  // Hanya beri label Kota/Kabupaten jika dia adalah INDUK (tidak punya parent di atasnya)
+                  if (type === "city") {
+                    finalName = "Kota " + cleanName;
+                  } else if (type === "county") {
+                    finalName = "Kabupaten " + cleanName;
+                  }
+                }
+                // Jika dia Kecamatan (seperti Trowulan), hasParent akan true, jadi nama tetap "Trowulan" tanpa "Kota".
+
+                // --- 4. SUSUN KONTEKS (Baris Bawah) ---
+                let contextParts = [];
+
+                // Logika menyusun teks bawah (Induk Wilayah)
+                if (address.city && finalName !== address.city) {
+                  let pCity = address.city;
+                  // Paksa tambah "Kota" di konteks jika belum ada
+                  if (!pCity.toLowerCase().startsWith("kota"))
+                    pCity = "Kota " + pCity;
+
+                  // Cek redudansi
+                  if (!finalName.includes(pCity.replace("Kota ", "")))
+                    contextParts.push(pCity);
+                } else if (address.county && finalName !== address.county) {
+                  let pKab = address.county;
+                  // Paksa tambah "Kabupaten" di konteks jika belum ada
+                  if (!pKab.toLowerCase().startsWith("kabupaten"))
+                    pKab = "Kabupaten " + pKab;
+
+                  // Cek redudansi
+                  if (!finalName.includes(pKab.replace("Kabupaten ", "")))
+                    contextParts.push(pKab);
+                }
+
+                if (address.state) contextParts.push(address.state);
+                const contextText = contextParts.join(", ");
+
+                // --- 5. FILTER DUPLIKAT BERDASARKAN TAMPILAN (FIX FINAL) ---
+                // Kita gabungkan Nama Final + Teks Konteks.
+                // Jika "Trowulan" + "Kabupaten Mojokerto, Jawa Timur" sudah pernah dibuat,
+                // maka data berikutnya yang menghasilkan teks SAMA PERSIS akan dibuang.
+
+                const uniqueDisplayKey = (finalName + contextText)
+                  .toLowerCase()
+                  .trim();
+
+                if (!displayedEntries.has(uniqueDisplayKey)) {
+                  displayedEntries.add(uniqueDisplayKey); // Catat bahwa tampilan ini sudah ada
+
+                  const lat = parseFloat(city.lat);
+                  const lng = parseFloat(city.lon);
+
+                  const cityOption = document.createElement("div");
+                  cityOption.className = "city-option";
+                  cityOption.innerHTML = `
+                            <div style="display:flex; flex-direction:column; gap:2px; overflow:hidden;">
+                                <span style="font-weight:600; font-size:14px; color:var(--text-main);">${finalName}</span>
+                                <span style="font-size:11px; color:#6B7280; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${contextText}</span>
+                            </div>
+                            <i class="ri-check-line" style="margin-left: 10px; flex-shrink: 0;"></i>
+                        `;
+
+                  cityOption.onclick = () => {
+                    selectCity(finalName, lat, lng);
+                  };
+
+                  citiesContainer.appendChild(cityOption);
+                }
+              });
+
+              if (citiesContainer.children.length === 0) {
+                citiesContainer.innerHTML =
+                  '<div style="text-align:center; padding:10px; color:#9CA3AF;">Hasil tidak spesifik.</div>';
+              }
+            } else {
+              citiesContainer.innerHTML =
+                '<div style="text-align:center; padding:10px; color:#9CA3AF;">Kota tidak ditemukan</div>';
+            }
+          })
+          .catch((error) => {
+            console.error("Error searching city:", error);
+            citiesContainer.innerHTML = "";
+            toast("Gagal mencari kota");
+          });
+      }
+
+      // --- FUNGSI PILIH KOTA (DIPERBARUI UNTUK MENYIMPAN RIWAYAT) ---
+      function selectCity(cityName, lat, lng) {
+        // 1. Simpan ke LocalStorage sebagai riwayat
+        let history =
+          JSON.parse(localStorage.getItem("prayer_city_history")) || [];
+
+        // Hapus kota jika sudah ada sebelumnya (supaya tidak duplikat & naik ke atas)
+        history = history.filter((c) => c.name !== cityName);
+
+        // Masukkan ke posisi paling atas (unshift)
+        history.unshift({ name: cityName, lat: lat, lng: lng });
+
+        // Batasi riwayat maksimal 3 kota terakhir agar tidak terlalu panjang
+        if (history.length > 3) history.pop();
+
+        localStorage.setItem("prayer_city_history", JSON.stringify(history));
+
+        // 2. Update Tampilan UI (Active State)
+        document.querySelectorAll(".city-option").forEach((el) => {
+          el.classList.remove("active");
+        });
+        // (Opsional) Highlight elemen yang diklik jika ada di DOM
+        if (event && event.currentTarget)
+          event.currentTarget.classList.add("active");
+
+        // 3. Load Jadwal Sholat
+        loadPrayerTimes(lat, lng, cityName);
+
+        // 4. Tutup Modal & Toast
+        closeLocationModal();
+        toast(`Lokasi diperbarui: ${cityName}`);
+      }
+    </script>
+
+    <script>
+      //arah kiblat
+      // --- LOGIC ARAH KIBLAT ---
+      let compassWatchId;
+      const MECCA_LAT = 21.422487;
+      const MECCA_LNG = 39.826206;
+
+      function openQibla() {
+        document.getElementById("view-qibla").classList.add("open");
+
+        // Cek lokasi tersimpan untuk menghitung sudut Kiblat
+        const location = JSON.parse(localStorage.getItem("prayer_location"));
+        if (location) {
+          initCompass(location.lat, location.lng);
+        } else {
+          toast("Mohon set lokasi terlebih dahulu");
+          // Fallback ke Jakarta jika null
+          initCompass(-6.2088, 106.8456);
+        }
+      }
+
+      function closeQibla() {
+        document.getElementById("view-qibla").classList.remove("open");
+        // Matikan listener sensor untuk hemat baterai
+        if (window.removeEventListener) {
+          window.removeEventListener("deviceorientation", handleOrientation);
+          window.removeEventListener(
+            "deviceorientationabsolute",
+            handleOrientation,
+          );
+        }
+      }
+
+      function initCompass(userLat, userLng) {
+        // 1. Hitung Qibla Bearing (Sudut Kiblat dari Utara Geografis)
+        const qiblaAngle = calculateQiblaAngle(userLat, userLng);
+
+        // Set posisi jarum Ka'bah di piringan kompas relatif terhadap 'N' (Utara)
+        // Di CSS, 'N' ada di 0 derajat (atas). Kita putar div indicator sesuai sudut kiblat.
+        const indicator = document.getElementById("qibla-indicator");
+        indicator.style.transform = `translate(-50%, -50%) rotate(${qiblaAngle}deg)`;
+
+        // 2. Deteksi Dukungan Sensor
+        if (
+          typeof DeviceOrientationEvent !== "undefined" &&
+          typeof DeviceOrientationEvent.requestPermission === "function"
+        ) {
+          // Khusus iOS 13+
+          document.getElementById("ios-permission-overlay").style.display =
+            "flex";
+        } else {
+          // Android / Non-iOS
+          startCompassListener(qiblaAngle);
+        }
+
+        // Simpan angle global untuk referensi handler
+        window.targetQiblaAngle = qiblaAngle;
+      }
+
+      function requestCompassPermission() {
+        if (
+          typeof DeviceOrientationEvent !== "undefined" &&
+          typeof DeviceOrientationEvent.requestPermission === "function"
+        ) {
+          DeviceOrientationEvent.requestPermission()
+            .then((response) => {
+              if (response === "granted") {
+                document.getElementById(
+                  "ios-permission-overlay",
+                ).style.display = "none";
+                startCompassListener(window.targetQiblaAngle);
+              } else {
+                toast("Izin kompas ditolak");
+              }
+            })
+            .catch(console.error);
+        } else {
+          startCompassListener(window.targetQiblaAngle);
+        }
+      }
+
+      function startCompassListener(qiblaAngle) {
+        // Android modern menggunakan 'deviceorientationabsolute' untuk kompas magnetik
+        if ("ondeviceorientationabsolute" in window) {
+          window.addEventListener(
+            "deviceorientationabsolute",
+            handleOrientation,
+          );
+        } else {
+          // Standar lama atau iOS
+          window.addEventListener("deviceorientation", handleOrientation);
+        }
+      }
+
+      function handleOrientation(e) {
+        let alpha = e.alpha; // Arah ponsel (0-360) relatif utara
+
+        // Fix untuk Android 'deviceorientationabsolute' vs webkitCompassHeading (iOS)
+        if (e.webkitCompassHeading) {
+          // iOS
+          alpha = e.webkitCompassHeading;
+        } else if (e.absolute === false) {
+          // Sensor tidak kalibrasi absolute (biasanya gyro murni), kurang akurat untuk kompas
+          // Tapi kita coba gunakan alpha apa adanya
+        }
+
+        // Jika alpha null (laptop/device tanpa sensor)
+        if (alpha === null) return;
+
+        // 1. Putar Piringan Kompas
+        // Piringan harus berlawanan dengan arah ponsel agar 'N' tetap menunjuk Utara
+        const disc = document.getElementById("compass-disc");
+        disc.style.transform = `rotate(${-alpha}deg)`;
+
+        // 2. Update UI Teks
+        document.getElementById("alpha-text").innerText =
+          Math.round(alpha) + "°";
+
+        // 3. Cek Kelurusan (Alignment)
+        // Logika:
+        // - Piringan diputar -alpha.
+        // - Indikator kiblat ada di posisi qiblaAngle (relatif piringan).
+        // - Posisi visual Indikator Kiblat di layar = qiblaAngle - alpha.
+        // - Kita ingin posisi visual mendekati 0 (atas lurus)
+
+        let visualAngle = window.targetQiblaAngle - alpha;
+        // Normalisasi ke -180 s/d 180 agar hitungan selisih gampang
+        while (visualAngle < -180) visualAngle += 360;
+        while (visualAngle > 180) visualAngle -= 360;
+
+        const container = document.getElementById("qibla-container");
+        const statusText = document.getElementById("qibla-status");
+
+        // Toleransi +- 5 derajat
+        if (Math.abs(visualAngle) < 5) {
+          if (!container.classList.contains("aligned")) {
+            container.classList.add("aligned");
+            // Getar jika support
+            if (navigator.vibrate) navigator.vibrate(50);
+          }
+          statusText.innerHTML =
+            '<i class="ri-check-double-line"></i> Anda menghadap Kiblat';
+        } else {
+          container.classList.remove("aligned");
+          // Beri petunjuk arah
+          if (visualAngle > 0) {
+            statusText.innerHTML =
+              '<i class="ri-arrow-right-line"></i> Putar Kanan';
+          } else {
+            statusText.innerHTML =
+              '<i class="ri-arrow-left-line"></i> Putar Kiri';
+          }
+        }
+      }
+
+      function calculateQiblaAngle(lat, lng) {
+        const PI = Math.PI;
+        // Konversi ke radian
+        const phiK = (MECCA_LAT * PI) / 180.0;
+        const lambdaK = (MECCA_LNG * PI) / 180.0;
+        const phi = (lat * PI) / 180.0;
+        const lambda = (lng * PI) / 180.0;
+
+        const psi =
+          (180.0 / PI) *
+          Math.atan2(
+            Math.sin(lambdaK - lambda),
+            Math.cos(phi) * Math.tan(phiK) -
+              Math.sin(phi) * Math.cos(lambdaK - lambda),
+          );
+
+        return Math.round(psi < 0 ? psi + 360 : psi);
+      }
+    </script>
+
+    <script>
+      // Initialize the app
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedFont = localStorage.getItem("pref_mushaf_font") || "LPMQ";
+        changeMushafFont(savedFont); // Set font dan update centang UI
+
+        // Inisialisasi tanggal saat ini
+        updateCurrentDate();
+
+        // Load jadwal sholat default (Jakarta)
+        loadPrayerTimes(-6.2088, 106.8456, "Jakarta");
+      });
+    </script>
+
+    <script>
+      /* --- LOGIKA TASBIH DIGITAL --- */
+      let tasbihCounter = 0;
+
+      function openTasbih() {
+        document.getElementById("view-tasbih").classList.add("open");
+        // Ambil nilai terakhir dari localStorage
+        tasbihCounter = parseInt(localStorage.getItem("tasbih_count") || "0");
+        updateTasbihDisplay();
+      }
+
+      function closeTasbih() {
+        document.getElementById("view-tasbih").classList.remove("open");
+      }
+
+      function addTasbihCount() {
+        tasbihCounter++;
+        updateTasbihDisplay();
+
+        // Efek getar HP jika didukung
+        if (navigator.vibrate) navigator.vibrate(30);
+      }
+
+      function resetTasbih() {
+        if (confirm("Reset hitungan ke 0?")) {
+          tasbihCounter = 0;
+          updateTasbihDisplay();
+          if (navigator.vibrate) navigator.vibrate(50);
+        }
+      }
+
+      function updateTasbihDisplay() {
+        document.getElementById("tasbih-count").innerText = tasbihCounter;
+        localStorage.setItem("tasbih_count", tasbihCounter);
+      }
+
+      /* --- LOGIKA DOA HARIAN (VERSI API JSON) --- */
+      let allDoaData = []; // Variabel global untuk menampung data API
+
+      function openDoa() {
+        document.getElementById("view-doa").classList.add("open");
+
+        // Cek apakah data sudah pernah diambil? Jika belum, ambil dari API
+        if (allDoaData.length === 0) {
+          getDoaFromApi();
+        }
+      }
+
+      function closeDoa() {
+        document.getElementById("view-doa").classList.remove("open");
+      }
+
+      function getDoaFromApi() {
+        const listEl = document.getElementById("list-doa");
+        listEl.innerHTML =
+          '<div class="loading"><i class="ri-loader-4-line spin"></i><br><br>Mengambil Data Doa...</div>';
+
+        // Menggunakan API Publik
+        fetch("https://open-api.my.id/api/doa")
+          .then((response) => response.json())
+          .then((data) => {
+            allDoaData = data; // Simpan ke variabel global agar pencarian cepat
+            renderDoaList(allDoaData);
+          })
+          .catch((err) => {
+            console.error(err);
+            listEl.innerHTML = `
+                <div class="empty-state">
+                    <i class="ri-wifi-off-line"></i>
+                    <p>Gagal memuat doa. Periksa koneksi internet.</p>
+                    <button class="btn-explore" onclick="getDoaFromApi()" style="margin-top:10px;">Coba Lagi</button>
+                </div>`;
+          });
+      }
+
+      /* GANTI FUNGSI renderDoaList YANG LAMA DENGAN INI */
+      function renderDoaList(data) {
+        const listEl = document.getElementById("list-doa");
+        listEl.innerHTML = "";
+
+        if (data.length === 0) {
+          listEl.innerHTML =
+            '<div class="empty-state">Doa tidak ditemukan</div>';
+          return;
+        }
+
+        data.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "card";
+
+          // --- PERBAIKAN UTAMA DI SINI ---
+          // Memaksa kartu untuk memanjang otomatis mengikuti isi teks
+          div.style.flexDirection = "column";
+          div.style.alignItems = "flex-start";
+          div.style.gap = "10px";
+          div.style.height = "auto"; // KUNCI: Biarkan tinggi otomatis
+          div.style.minHeight = "fit-content"; // KUNCI: Sesuaikan dengan konten
+          div.style.paddingBottom = "30px"; // Tambahan padding bawah agar lega
+
+          div.innerHTML = `
+            <h3 style="font-size: 16px; color: var(--text-main); width:100%; border-bottom:1px dashed #eee; padding-bottom:10px; margin-bottom:5px;">
+                ${item.judul}
+            </h3>
+            <div class="doa-arabic">${item.arab}</div>
+            <div class="doa-latin">${item.latin}</div>
+            <div class="doa-arti">${item.terjemah}</div>
+        `;
+          listEl.appendChild(div);
+        });
+      }
+
+      function filterDoa(val) {
+        const v = val.toLowerCase();
+        // Filter berdasarkan variabel global allDoaData
+        const filtered = allDoaData.filter((item) =>
+          item.judul.toLowerCase().includes(v),
+        );
+        renderDoaList(filtered);
+      }
+
+      // --- LOGIKA TOGGLE PENCARIAN DOA ---
+
+      function toggleDoaSearch() {
+        const searchBar = document.getElementById("doa-search-bar");
+        const icon = document.getElementById("icon-search-doa");
+        const btn = document.querySelector(".btn-search-toggle");
+        const input = document.getElementById("input-doa");
+
+        // Cek apakah sedang terbuka
+        const isOpen = searchBar.classList.contains("open");
+
+        if (isOpen) {
+          searchBar.classList.remove("open");
+          btn.classList.remove("active");
+
+          // Kembalikan ikon search
+          icon.className = "ri-search-2-line";
+        } else {
+          searchBar.classList.add("open");
+          btn.classList.add("active");
+
+          icon.className = "ri-close-line";
+
+          setTimeout(() => {
+            input.focus();
+          }, 100); // Delay sedikit menunggu animasi
+        }
+      }
+
+      function closeDoa() {
+        document.getElementById("view-doa").classList.remove("open");
+
+        const searchBar = document.getElementById("doa-search-bar");
+        const icon = document.getElementById("icon-search-doa");
+        const btn = document.querySelector(".btn-search-toggle");
+
+        if (searchBar && searchBar.classList.contains("open")) {
+          searchBar.classList.remove("open");
+          btn.classList.remove("active");
+          icon.className = "ri-search-2-line";
+        }
+      }
+    </script>
+
+    <script>
+      /* --- LOGIKA PENGATURAN --- */
+
+      // Panggil fungsi ini saat dokumen dimuat
+      document.addEventListener("DOMContentLoaded", () => {
+        // ... kode inisialisasi lainnya ...
+        loadSettings();
+      });
+
+      function loadSettings() {
+        // 1. Load Dark Mode
+        const isDark = localStorage.getItem("setting_dark_mode") === "true";
+        document.getElementById("toggle-dark-mode").checked = isDark;
+        if (isDark) document.body.classList.add("dark-mode");
+
+        // 2. Load Font Size
+        const fontSize = localStorage.getItem("setting_font_size") || "28";
+        document.getElementById("slider-font-size").value = fontSize;
+        applyFontSize(fontSize);
+
+        // 3. Load Translation Toggle
+        const showTrans =
+          localStorage.getItem("setting_show_trans") !== "false"; // default true
+        document.getElementById("toggle-translation").checked = showTrans;
+        applyTranslationVisibility(showTrans);
+
+        // 4. Load Autoplay
+        const autoplay = localStorage.getItem("setting_autoplay") === "true";
+        document.getElementById("toggle-autoplay").checked = autoplay;
+      }
+
+      function saveSetting(key, value) {
+        localStorage.setItem("setting_" + key, value);
+      }
+
+      // --- FUNGSI SPESIFIK ---
+
+      function toggleDarkMode(el) {
+        const isDark = el.checked;
+        if (isDark) document.body.classList.add("dark-mode");
+        else document.body.classList.remove("dark-mode");
+        saveSetting("dark_mode", isDark);
+      }
+
+      function changeArabicFontSize(val) {
+        document.getElementById("font-size-val").innerText = val + "px";
+        applyFontSize(val);
+        saveSetting("font_size", val);
+      }
+
+      function applyFontSize(val) {
+        // Terapkan variable CSS global untuk font Arab
+        document.documentElement.style.setProperty(
+          "--font-arab-size",
+          val + "px",
+        );
+
+        // Terapkan langsung ke elemen yang mungkin sudah ter-render
+        const verses = document.querySelectorAll(".verse-arabic");
+        verses.forEach((v) => (v.style.fontSize = val + "px"));
+
+        // Terapkan juga ke Mushaf (karena Mushaf pakai class mushaf-page-text)
+        const mushaf = document.querySelector(".mushaf-page-text");
+        if (mushaf) mushaf.style.fontSize = val + "px";
+      }
+
+      function toggleTranslation(el) {
+        const show = el.checked;
+        applyTranslationVisibility(show);
+        saveSetting("show_trans", show);
+      }
+
+      function applyTranslationVisibility(show) {
+        const displayVal = show ? "block" : "none";
+
+        // Gunakan CSS class injection agar performa lebih baik saat render list panjang
+        let styleEl = document.getElementById("dynamic-trans-style");
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = "dynamic-trans-style";
+          document.head.appendChild(styleEl);
+        }
+        styleEl.innerHTML = `.verse-latin, .meaning { display: ${displayVal} !important; }`;
+      }
+
+      function resetAppData() {
+        if (
+          confirm(
+            "Apakah Anda yakin ingin mereset aplikasi? Semua riwayat lokasi, bacaan terakhir, dan pengaturan akan dihapus.",
+          )
+        ) {
+          localStorage.clear();
+          location.reload();
+          toast("Aplikasi berhasil direset");
+        }
+      }
+    </script>
+
+    <script>
+      //tahlil
+      /* --- LOGIKA FITUR TAHLIL --- */
+
+      // Data Tahlil Ringkas (Bisa ditambah sesuai kebutuhan)
+      const tahlilData = [
+        {
+          title: "Pengantar Al-Fatihah",
+          count: "1x",
+          arab: "إِلَى حَضْرَةِ النَّبِيِّ الْمُصْطَفَى صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ وَآلِهِ وَصَحْبِهِ وَأَزْوَاجِهِ وَذُرِّيَّتِهِ وَأَهْلِ بَيْتِهِ الْكِرَامِ، شَيْءٌ لِلَّهِ لَهُمُ الْفَاتِحَةُ",
+          arti: "Kepada kehadiran Nabi terpilih Muhammad SAW, keluarganya, sahabatnya, istri-istrinya, keturunannya, dan ahli baitnya yang mulia. Al-Fatihah untuk mereka...",
+        },
+        {
+          title: "Surat Al-Ikhlas",
+          count: "3x",
+          arab: "قُلْ هُوَ ٱللَّهُ أَحَدٌ ۞ ٱللَّهُ ٱلصَّمَدُ ۞ لَمْ يَلِدْ وَلَمْ يُولَدْ ۞ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
+          arti: "Katakanlah: Dialah Allah, Yang Maha Esa...",
+        },
+        {
+          title: "Surat Al-Falaq",
+          count: "1x",
+          arab: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ۞ مِن شَرِّ مَا خَلَقَ ۞ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۞ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ ۞ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+          arti: "Katakanlah: Aku berlindung kepada Tuhan Yang Menguasai subuh...",
+        },
+        {
+          title: "Surat An-Nas",
+          count: "1x",
+          arab: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ۞ مَلِكِ ٱلنَّاسِ ۞ إِلَٰهِ ٱلنَّاسِ ۞ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ۞ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ ۞ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
+          arti: "Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia...",
+        },
+        {
+          title: "Awal Al-Baqarah",
+          count: "1x",
+          arab: "الٓمٓ ۞ ذَٰلِكَ ٱلْكِتَٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ ۞ ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَ ۞ وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْأَخِرَةِ هُمْ يُوقِنُونَ",
+          arti: "Alif laam miim. Kitab (Al Quran) ini tidak ada keraguan padanya; petunjuk bagi mereka yang bertakwa...",
+        },
+        {
+          title: "Ayat Kursi",
+          count: "1x",
+          arab: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَئُودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
+          arti: "Allah, tidak ada Tuhan (yang berhak disembah) melainkan Dia Yang Hidup kekal lagi terus menerus mengurus (makhluk-Nya)...",
+        },
+        {
+          title: "Istighfar",
+          count: "3x",
+          arab: "أَسْتَغْفِرُ اللهَ الْعَظِيْمَ",
+          arti: "Saya mohon ampun kepada Allah Yang Maha Agung.",
+        },
+        {
+          title: "Tahlil",
+          count: "33x / 100x",
+          arab: "لَا إِلَهَ إِلَّا اللهُ",
+          arti: "Tiada Tuhan selain Allah.",
+        },
+        {
+          title: "Tasbih",
+          count: "1x",
+          arab: "سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيْمِ",
+          arti: "Maha Suci Allah dengan segala puji-Nya, Maha Suci Allah yang Maha Agung.",
+        },
+        {
+          title: "Shalawat",
+          count: "1x",
+          arab: "اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ",
+          arti: "Ya Allah, limpahkanlah rahmat kepada junjungan kami Nabi Muhammad dan kepada keluarga junjungan kami Nabi Muhammad.",
+        },
+      ];
+
+      function openTahlil() {
+        const view = document.getElementById("view-tahlil");
+        const list = document.getElementById("list-tahlil");
+
+        view.classList.add("open");
+
+        // Render jika kosong (agar tidak render ulang terus)
+        if (list.innerHTML.trim() === "") {
+          let html = "";
+          tahlilData.forEach((item, index) => {
+            html += `
+                <div class="tahlil-card" style="animation: fadeIn 0.4s ease ${index * 0.1}s forwards; opacity: 0; transform: translateY(10px);">
+                    <div class="tahlil-title">
+                        <span>${item.title}</span>
+                        ${item.count ? `<span class="tahlil-count-badge">${item.count}</span>` : ""}
+                    </div>
+                    <div class="tahlil-arabic">${item.arab}</div>
+                    <div class="tahlil-translation">${item.arti}</div>
+                </div>
+            `;
+          });
+          list.innerHTML = html;
+
+          // Terapkan setting font size global ke tahlil juga
+          const savedSize = localStorage.getItem("setting_font_size") || "28";
+          document
+            .querySelectorAll(".tahlil-arabic")
+            .forEach((el) => (el.style.fontSize = savedSize + "px"));
+        }
+      }
+
+      function closeTahlil() {
+        document.getElementById("view-tahlil").classList.remove("open");
+      }
+    </script>
+  </body>
+</html>
